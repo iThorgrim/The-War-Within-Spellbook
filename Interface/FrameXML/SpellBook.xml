@@ -1,0 +1,86 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+    <Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" frameLevel="510" virtual="true">
+        <Size x="24" y="24"/>
+        <Frames>
+            <Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
+                <Scripts>
+                    <OnClick>
+                        self:GetParent():Maximize();
+                        PlaySoundFile("Interface\\FrameXML\\Sound\\uchatscrollbutton.ogg");
+                    </OnClick>
+                </Scripts>
+
+                <NormalTexture file="Interface/Buttons/redbutton2x">
+                        <TexCoords left="0.300781" right="0.441406" top="0.0078125" bottom="0.304688"/>
+                </NormalTexture>
+
+                <PushedTexture file="Interface/Buttons/redbutton2x">
+                    <TexCoords left="0.300781" right="0.441406" top="0.632812" bottom="0.929688"/>
+                </PushedTexture>
+
+                <DisabledTexture file="Interface/Buttons/redbutton2x">
+                    <TexCoords left="0.152344" right="0.292969" top="0.320312" bottom="0.617188"/>
+                </DisabledTexture>
+
+                <HighlightTexture file="Interface/Buttons/redbutton2x" alphaMode="ADD">
+                    <TexCoords left="0.449219" right="0.589844" top="0.0078125" bottom="0.304688"/>
+                </HighlightTexture>
+            </Button>
+
+            <Button parentKey="MinimizeButton" setAllPoints="true">
+                <Scripts>
+                    <OnClick>
+                        self:GetParent():Minimize();
+                        PlaySoundFile("Interface\\FrameXML\\Sound\\uchatscrollbutton.ogg");
+                    </OnClick>
+                </Scripts>
+
+                <NormalTexture file="Interface/Buttons/redbutton2x">
+                    <TexCoords left="0.00390625" right="0.144531" top="0.0078125" bottom="0.304688"/>
+                </NormalTexture>
+
+                <PushedTexture file="Interface/Buttons/redbutton2x">
+                    <TexCoords left="0.00390625" right="0.144531" top="0.632812" bottom="0.929688"/>
+                </PushedTexture>
+
+                <DisabledTexture file="Interface/Buttons/redbutton2x">
+                    <TexCoords left="0.00390625" right="0.144531" top="0.320312" bottom="0.617188"/>
+                </DisabledTexture>
+
+                <HighlightTexture file="Interface/Buttons/redbutton2x" alphaMode="ADD">
+                    <TexCoords left="0.449219" right="0.589844" top="0.0078125" bottom="0.304688"/>
+                </HighlightTexture>
+            </Button>
+        </Frames>
+        <Scripts>
+            <OnShow>
+                -- TODO
+            </OnShow>
+        </Scripts>
+    </Frame>
+
+    <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="false">
+        <Size x="1618" y="883"/>
+
+        <Anchors>
+            <Anchor point="TOP" x="0" y="-41"/>
+        </Anchors>
+
+        <Frames>
+            <Frame parentKey="MaximizeMinimizeButton" frameLevel="5510">
+                <Anchors>
+                    <Anchor point="RIGHT" relativeTo="$parentCloseButton" relativePoint="LEFT" x="0" y="0"/>
+                </Anchors>
+            </Frame>
+        </Frames>
+
+        <Attributes>
+            <Attribute name="minimizedWidth" type="number" value="809"/>
+            <Attribute name="maximizedWidth" type="number" value="1618"/>
+        </Attributes>
+
+    </Frame>
+
+</Ui>

@@ -145,3 +145,4 @@ AnimationSystem.lua
 
 ## add new modules above here
 LocalizationPost.xml
+SpellBook.xml
