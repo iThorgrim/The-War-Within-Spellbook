@@ -1,6 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ../FrameXML/UI.xsd">
 
+    <Script file="SpellBook.lua"/>
+
     <Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" frameLevel="510" virtual="true">
         <Size x="24" y="24"/>
         <Frames>
@@ -90,8 +92,97 @@
         </HighlightTexture>
     </Button>
 
+    <Frame name="SpellBookFrameTemplate" virtual="true">
+        <Attributes>
+            <Attribute name="topBarFullWidth" value="1614" type="number" />
+        </Attributes>
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="TopBar" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                    <Size x="1100" y="54"/>
+
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                    </Anchors>
+
+                    <TexCoords left="0.000488281" right="0.788574" top="0.000976562" bottom="0.0576172"/>
+                </Texture>
+
+                <Texture parentKey="BookBGHalved" file="Interface/SpellBook/SpellbookBackgroundEvergreen" hidden="true">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" y="-51"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+
+                    <TexCoords left="0.000488281" right="0.394531" top="0.0595703" bottom="0.845703"/>
+                </Texture>
+
+                <Texture parentKey="BookBGLeft" name="BookBGLeft" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" y="-51"/>
+                        <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
+                    </Anchors>
+
+                    <TexCoords left="0.446289" right="0.839844" top="0.0595703" bottom="0.845703"/>
+                </Texture>
+
+                <Texture parentKey="BookBGRight" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" relativePoint="TOP" y="-51"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+
+                    <TexCoords left="0.000488281" right="0.394531" top="0.0595703" bottom="0.845703"/>
+                </Texture>
+            </Layer>
+
+            <Layer level="ARTWORK">
+                <Texture parentKey="Bookmark" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                    <Size x="102" y="557"/>
+
+                    <Anchors>
+                        <Anchor point="TOPRIGHT" relativeTo="BookBGLeft" x="62" y="4"/>
+                    </Anchors>
+
+                    <TexCoords left="0.395508" right="0.445312" top="0.0595703" bottom="0.603516"/>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <Frame parentKey="BookCornerFlipbook" name="BookCornerFlipbook" enableMouse="true">
+                <Size x="64" y="64"/>
+
+                <Anchors>
+                    <Anchor point="BOTTOMRIGHT" x="-20" y="10"/>
+                </Anchors>
+
+                <Layers>
+                    <Layer>
+                        <Texture parentKey="Texture" name="Texture" file="Interface/SpellBook/SpellbookElements">
+                            <Size x="100" y="100"/>
+
+                            <Anchors>
+                                <Anchor point="BOTTOMRIGHT" x="8" y="-5"/>
+                            </Anchors>
+
+                            <TexCoords left="0.000976562" right="0.586914" top="0.000976562" bottom="0.303711"/>
+                        </Texture>
+                    </Layer>
+                </Layers>
+
+                <Scripts>
+                    <OnShow function="SpellBookCorner_OnShow"/>
+                    <OnEnter function="SpellBookCorner_OnEnter"/>
+                    <OnLeave function="SpellBookCorner_OnLeave"/>
+                </Scripts>
+            </Frame>
+        </Frames>
+    </Frame>
+
     <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="false">
-        <Size x="800" y="883"/>
+        <Size x="1100" y="650"/>
 
         <Anchors>
             <Anchor point="TOP" x="0" y="-41"/>
@@ -109,6 +200,19 @@
                     <Anchor point="RIGHT" relativeTo="CloseButton" relativePoint="LEFT" x="0" y="0"/>
                 </Anchors>
             </Frame>
+
+            <Frame parentKey="SpellBookFrame" inherits="SpellBookFrameTemplate" frameLevel="100" hidden="false">
+                <Size x="1100" y="650"/>
+
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" x="0" y="-23"/>
+                </Anchors>
+
+                <Attributes>
+                    <Attribute name="minimizedWidth" value="806"/>
+                    <Attribute name="maximizedWidth" value="1612"/>
+                </Attributes>
+            </Frame>
         </Frames>
 
         <Attributes>
@@ -116,6 +220,9 @@
             <Attribute name="maximizedWidth" type="number" value="1618"/>
         </Attributes>
 
+        <Scripts>
+            <OnLoad function="SpellBookFrame_OnLoad"/>
+        </Scripts>
     </Frame>
 
 </Ui>
