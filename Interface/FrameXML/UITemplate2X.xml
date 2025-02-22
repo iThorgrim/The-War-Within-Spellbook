@@ -61,7 +61,7 @@
 
         <Layers>
             <Layer level="ARTWORK">
-                <Texture name="Portrait" parentKey="Portrait" file="Interface/Icons/trade_engineering">
+                <Texture name="Portrait" parentKey="Portrait">
                     <Size x="150" y="150"/>
 
                     <Anchors>
@@ -142,25 +142,6 @@
         </Layers>
 
         <Frames>
-            <Frame name="PortraitContainer" parentKey="PortraitContainer">
-                <Size x="150" y="150"/>
-                <Anchors>
-                    <Anchor point="CENTER" relativeTo="CornerTopLeft" relativePoint="CENTER" x="0" y="0"/>
-                </Anchors>
-
-                <Layers>
-                    <Layer level="BORDER">
-                        <Texture name="Portrait" parentKey="Portrait" file="Interface/Icons/trade_engineering">
-                            <Size x="64" y="64"/>
-                            <Anchors>
-                                <Anchor point="CENTER" relativePoint="CENTER"/>
-                            </Anchors>
-                        </Texture>
-                    </Layer>
-                </Layers>
-            </Frame>
-
-
             <Button parentKey="CloseButton" name="CloseButton" inherits="CloseButtonTemplate, CloseButton2X" frameLevel="6000">
                 <Anchors>
                     <Anchor point="BOTTOM" relativePoint="RIGHT" relativeTo="CornerTopRight" x="-15" y="-2"/>
@@ -173,12 +154,6 @@
                 </Anchors>
             </Frame>
         </Frames>
-
-        <Scripts>
-            <OnLoad>
-                SetPortraitTexture(self.PortraitContainer.Portrait, "Interface/icons/trade_engineering")
-            </OnLoad>
-        </Scripts>
     </Frame>
 
     <!--
