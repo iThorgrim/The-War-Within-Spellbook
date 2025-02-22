@@ -145,4 +145,8 @@ AnimationSystem.lua
 
 ## add new modules above here
 LocalizationPost.xml
+
+## custom modules
+UITemplate2X.xml
+
 SpellBook.xml

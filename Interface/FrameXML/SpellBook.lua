@@ -43,7 +43,7 @@ local function StartBookCornerAnimation(frame, reverse)
 
     frame.frameCount = 8
     frame.currentFrame = reverse and frame.frameCount or 1
-    frame.timing = 0.05
+    frame.timing = 0.03
     frame.lastUpdate = 0
     frame.isPlaying = true
     frame.reverse = reverse

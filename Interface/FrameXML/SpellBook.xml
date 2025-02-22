@@ -3,103 +3,14 @@
 
     <Script file="SpellBook.lua"/>
 
-    <Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" frameLevel="510" virtual="true">
-        <Size x="24" y="24"/>
-        <Frames>
-            <Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
-                <Scripts>
-                    <OnClick>
-                        self:GetParent():Maximize();
-                        PlaySoundFile("Interface/FrameXML/Sound/uchatscrollbutton.ogg");
-                    </OnClick>
-                </Scripts>
-
-                <NormalTexture file="Interface/Buttons/redbutton2x">
-                        <TexCoords left="0.300781" right="0.441406" top="0.0078125" bottom="0.304688"/>
-                </NormalTexture>
-
-                <PushedTexture file="Interface/Buttons/redbutton2x">
-                    <TexCoords left="0.300781" right="0.441406" top="0.632812" bottom="0.929688"/>
-                </PushedTexture>
-
-                <DisabledTexture file="Interface/Buttons/redbutton2x">
-                    <TexCoords left="0.152344" right="0.292969" top="0.320312" bottom="0.617188"/>
-                </DisabledTexture>
-
-                <HighlightTexture file="Interface/Buttons/redbutton2x" alphaMode="ADD">
-                    <TexCoords left="0.449219" right="0.589844" top="0.0078125" bottom="0.304688"/>
-                </HighlightTexture>
-            </Button>
-
-            <Button parentKey="MinimizeButton" setAllPoints="true">
-                <Scripts>
-                    <OnClick>
-                        self:GetParent():Minimize();
-                        PlaySoundFile("Interface/FrameXML/Sound/uchatscrollbutton.ogg");
-                    </OnClick>
-                </Scripts>
-
-                <NormalTexture file="Interface/Buttons/redbutton2x">
-                    <TexCoords left="0.00390625" right="0.144531" top="0.0078125" bottom="0.304688"/>
-                </NormalTexture>
-
-                <PushedTexture file="Interface/Buttons/redbutton2x">
-                    <TexCoords left="0.00390625" right="0.144531" top="0.632812" bottom="0.929688"/>
-                </PushedTexture>
-
-                <DisabledTexture file="Interface/Buttons/redbutton2x">
-                    <TexCoords left="0.00390625" right="0.144531" top="0.320312" bottom="0.617188"/>
-                </DisabledTexture>
-
-                <HighlightTexture file="Interface/Buttons/redbutton2x" alphaMode="ADD">
-                    <TexCoords left="0.449219" right="0.589844" top="0.0078125" bottom="0.304688"/>
-                </HighlightTexture>
-            </Button>
-        </Frames>
-        <Scripts>
-            <OnShow>
-                print('ok')
-            </OnShow>
-        </Scripts>
-    </Frame>
-
-    <Button name="CloseButtonTemplate" parentKey="CloseButton" frameLevel="510" virtual="true">
-        <Size>
-            <AbsDimension x="24" y="24"/>
-        </Size>
-
-        <Scripts>
-            <OnClick>
-                HideParentPanel(self);
-                PlaySoundFile("Interface/FrameXML/Sound/uchatscrollbutton.ogg");
-            </OnClick>
-        </Scripts>
-
-        <NormalTexture file="Interface/Buttons/redbutton2x">
-            <TexCoords left="0.152344" right="0.292969" top="0.0078125" bottom="0.304688"/>
-        </NormalTexture>
-
-        <PushedTexture file="Interface/Buttons/redbutton2x">
-            <TexCoords left="0.152344" right="0.292969" top="0.632812" bottom="0.929688"/>
-        </PushedTexture>
-
-        <DisabledTexture file="Interface/Buttons/redbutton2x">
-            <TexCoords left="0.152344" right="0.292969" top="0.320312" bottom="0.617188"/>
-        </DisabledTexture>
-
-        <HighlightTexture file="Interface/Buttons/redbutton2x" alphaMode="ADD">
-            <TexCoords left="0.449219" right="0.589844" top="0.0078125" bottom="0.304688"/>
-        </HighlightTexture>
-    </Button>
-
-    <Frame name="SpellBookFrameTemplate" virtual="true">
+    <Frame name="SpellBookFrameTemplate" inherits="PortraitFrame2X" enableMouse="true" virtual="true">
         <Attributes>
-            <Attribute name="topBarFullWidth" value="1614" type="number" />
+            <Attribute name="topBarFullWidth" value="1100" type="number" />
         </Attributes>
 
         <Layers>
-            <Layer level="BACKGROUND">
-                <Texture parentKey="TopBar" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+            <Layer level="ARTWORK">
+                <Texture parentKey="Background" file="Interface/SpellBook/SpellbookBackgroundEvergreen" setAllPoints="true">
                     <Size x="1100" y="54"/>
 
                     <Anchors>
@@ -107,15 +18,6 @@
                     </Anchors>
 
                     <TexCoords left="0.000488281" right="0.788574" top="0.000976562" bottom="0.0576172"/>
-                </Texture>
-
-                <Texture parentKey="BookBGHalved" file="Interface/SpellBook/SpellbookBackgroundEvergreen" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOPLEFT" y="-51"/>
-                        <Anchor point="BOTTOMRIGHT"/>
-                    </Anchors>
-
-                    <TexCoords left="0.000488281" right="0.394531" top="0.0595703" bottom="0.845703"/>
                 </Texture>
 
                 <Texture parentKey="BookBGLeft" name="BookBGLeft" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
@@ -137,7 +39,7 @@
                 </Texture>
             </Layer>
 
-            <Layer level="ARTWORK">
+            <Layer level="OVERLAY">
                 <Texture parentKey="Bookmark" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
                     <Size x="102" y="557"/>
 
@@ -181,7 +83,7 @@
         </Frames>
     </Frame>
 
-    <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="false">
+    <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="false" inherits="SpellBookFrameTemplate">
         <Size x="1100" y="650"/>
 
         <Anchors>
@@ -189,23 +91,11 @@
         </Anchors>
 
         <Frames>
-            <Button parentKey="CloseButton" name="CloseButton" inherits="CloseButtonTemplate" frameLevel="6000">
-                <Anchors>
-                    <Anchor point="TOPRIGHT" x="-2" y="-1"/>
-                </Anchors>
-            </Button>
-
-            <Frame parentKey="MaximizeMinimizeButton" frameLevel="5510" inherits="MaximizeMinimizeButtonFrameTemplate">
-                <Anchors>
-                    <Anchor point="RIGHT" relativeTo="CloseButton" relativePoint="LEFT" x="0" y="0"/>
-                </Anchors>
-            </Frame>
-
-            <Frame parentKey="SpellBookFrame" inherits="SpellBookFrameTemplate" frameLevel="100" hidden="false">
+            <Frame parentKey="SpellBookFrame" frameLevel="100" hidden="false">
                 <Size x="1100" y="650"/>
 
                 <Anchors>
-                    <Anchor point="BOTTOMLEFT" x="0" y="-23"/>
+                    <Anchor point="BOTTOMLEFT" x="0" y="0"/>
                 </Anchors>
 
                 <Attributes>
@@ -222,6 +112,10 @@
 
         <Scripts>
             <OnLoad function="SpellBookFrame_OnLoad"/>
+            <OnShow>
+                print(self.Portrait)
+                SetPortraitTexture(self.Portrait, "Interface/icons/trade_engineering")
+            </OnShow>
         </Scripts>
     </Frame>
 
