@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ../FrameXML/UI.xsd">
 
-    <Script file="SpellBook.lua"/>
+    <Script file="SpellBook_UI.lua"/>
 
     <Frame name="SpellBookFrameTemplate" inherits="PortraitFrame2X" enableMouse="true" virtual="true">
         <Attributes>
@@ -10,7 +10,7 @@
 
         <Layers>
             <Layer level="ARTWORK">
-                <Texture parentKey="Background" file="Interface/SpellBook/SpellbookBackgroundEvergreen" setAllPoints="true">
+                <Texture name="$parentBookTopBar" parentKey="BookTopBar" file="Interface/SpellBook/SpellbookBackgroundEvergreen" setAllPoints="true">
                     <Size x="1100" y="54"/>
 
                     <Anchors>
@@ -20,7 +20,7 @@
                     <TexCoords left="0.000488281" right="0.788574" top="0.000976562" bottom="0.0576172"/>
                 </Texture>
 
-                <Texture parentKey="BookBGLeft" name="BookBGLeft" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                <Texture name="$parentBookBGLeft" parentKey="BookBGLeft" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
                     <Anchors>
                         <Anchor point="TOPLEFT" y="-51"/>
                         <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
@@ -29,7 +29,7 @@
                     <TexCoords left="0.446289" right="0.839844" top="0.0595703" bottom="0.845703"/>
                 </Texture>
 
-                <Texture parentKey="BookBGRight" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                <Texture name="$parentBookBGRight" parentKey="BookBGRight" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
                     <Anchors>
                         <Anchor point="TOPLEFT" relativePoint="TOP" y="-51"/>
                         <Anchor point="BOTTOMRIGHT"/>
@@ -40,11 +40,11 @@
             </Layer>
 
             <Layer level="OVERLAY">
-                <Texture parentKey="Bookmark" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
+                <Texture name="$parentBookmark" parentKey="Bookmark" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
                     <Size x="102" y="557"/>
 
                     <Anchors>
-                        <Anchor point="TOPRIGHT" relativeTo="BookBGLeft" x="62" y="4"/>
+                        <Anchor point="TOPRIGHT" relativeTo="$parentBookBGLeft" x="62" y="4"/>
                     </Anchors>
 
                     <TexCoords left="0.395508" right="0.445312" top="0.0595703" bottom="0.603516"/>
@@ -53,17 +53,17 @@
         </Layers>
 
         <Frames>
-            <Frame parentKey="BookCornerFlipbook" name="BookCornerFlipbook" enableMouse="true">
-                <Size x="64" y="64"/>
+            <Frame name="$parentBookCornerFlipbook" parentKey="BookCornerFlipbook" enableMouse="true">
+                <Size x="32" y="32"/>
 
                 <Anchors>
-                    <Anchor point="BOTTOMRIGHT" x="-20" y="10"/>
+                    <Anchor point="BOTTOMRIGHT" x="-18" y="10"/>
                 </Anchors>
 
                 <Layers>
                     <Layer>
-                        <Texture parentKey="Texture" name="Texture" file="Interface/SpellBook/SpellbookElements">
-                            <Size x="100" y="100"/>
+                        <Texture name="$parentTexture" parentKey="Texture" file="Interface/SpellBook/SpellbookElements">
+                            <Size x="128" y="128"/>
 
                             <Anchors>
                                 <Anchor point="BOTTOMRIGHT" x="8" y="-5"/>
@@ -76,14 +76,98 @@
 
                 <Scripts>
                     <OnShow function="SpellBookCorner_OnShow"/>
-                    <OnEnter function="SpellBookCorner_OnEnter"/>
-                    <OnLeave function="SpellBookCorner_OnLeave"/>
                 </Scripts>
             </Frame>
         </Frames>
     </Frame>
 
-    <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="false" inherits="SpellBookFrameTemplate">
+    <Button name="SpellBookItemTemplate" virtual="true">
+        <Size x="160" y="40"/>
+        <Anchors>
+            <Anchor point="TOPLEFT"/>
+        </Anchors>
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Backplate" file="Interface/SpellBook/SpellbookElements" alpha=".33">
+                    <Size x="156" y="46"/>
+                    <Anchors>
+                        <Anchor point="CENTER" x="0" y="0"/>
+                    </Anchors>
+                    
+                    <TexCoords left="0.311523" right="0.561523" top="0.305664" bottom="0.368164"/>
+                </Texture>
+            </Layer>
+        </Layers>
+
+        <Frames>
+            <Frame parentKey="TextContainer">
+                <Size x="100" y="30"/>
+                <Anchors>
+                    <Anchor point="LEFT" x="35" y="-2.5"/>
+                </Anchors>
+
+                <Layers>
+                    <Layer level="ARTWORK">
+                        <FontString parentKey="Name" inherits="SystemFont_Large" justifyH="LEFT" maxLines="3">
+                            <Size x="10" y="23"/>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                                <Anchor point="TOPRIGHT"/>
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="SubName" inherits="SystemFont_Med1" justifyH="LEFT" maxLines="2" wordwrap="true">
+                            <Anchors>
+                                <Anchor point="TOPLEFT" relativeTo="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+                                <Anchor point="TOPRIGHT" relativeTo="$parent.Name" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+                            </Anchors>
+                        </FontString>
+                        <FontString parentKey="RequiredLevel" inherits="SystemFont_Med1" justifyH="LEFT" maxLines="1"/>
+                    </Layer>
+                </Layers>
+            </Frame>
+        </Frames>
+    </Button>
+
+    <Frame name="SpellBookHeaderTemplate" virtual="true">
+		<Size x="250" y="51"/>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backplate" file="Interface/SpellBook/SpellBookElements" alpha="0.65">
+					<Size x="416" y="106"/>
+					<Anchors>
+						<Anchor point="LEFT" x="-85" y="10"/>
+					</Anchors>
+
+                    <TexCoords left="0.000976562" right="0.30957" top="0.305664" bottom="0.40918"/>
+				</Texture>
+			</Layer>
+
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="GameFontNormal" setAllPoints="true" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-8" y="0"/>
+						<Anchor point="TOPRIGHT" x="-60"/>
+					</Anchors>
+                </FontString>
+
+                <Texture parentKey="Border" file="Interface/SpellBook/SpellBookElements">
+					<Size y="11"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="-32" y="15"/>
+						<Anchor point="BOTTOMRIGHT" x="-100"/>
+					</Anchors>
+
+                    <TexCoords left="0.24707" right="0.888672" top="0.411133" bottom="0.421875"/>
+                </Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+    <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="true" inherits="SpellBookFrameTemplate">
         <Size x="1100" y="650"/>
 
         <Anchors>
@@ -98,6 +182,22 @@
                     <Anchor point="BOTTOMLEFT" x="0" y="0"/>
                 </Anchors>
 
+                <Frames>
+                    <Frame name="$parentPageView1" parentKey="PageView1">
+                        <Size x="520" y="540"/>
+                        <Anchors>
+                            <Anchor point="TOPLEFT" x="60" y="-80"/>
+                        </Anchors>
+                    </Frame>
+                    
+                    <Frame name="$parentPageView2" parentKey="PageView2">
+                        <Size x="520" y="540"/>
+                        <Anchors>
+                            <Anchor point="TOPRIGHT" x="30" y="-80"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+
                 <Attributes>
                     <Attribute name="minimizedWidth" value="806"/>
                     <Attribute name="maximizedWidth" value="1612"/>
@@ -111,12 +211,13 @@
         </Attributes>
 
         <Scripts>
-            <OnLoad function="SpellBookFrame_OnLoad"/>
+            <OnLoad>
+                SpellBookFrame_OnLoad(self);
+                PlayerSpellsFrame_OnLoad(self);
+            </OnLoad>
             <OnShow>
-                print(self.Portrait)
-                SetPortraitTexture(self.Portrait, "Interface/icons/trade_engineering")
+                PlayerSpellsFrame_OnShow(self);
             </OnShow>
         </Scripts>
     </Frame>
-
 </Ui>

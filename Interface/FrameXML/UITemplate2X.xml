@@ -1,4 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
+
+    <Font name="SystemFont_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
+        <FontHeight val="11"/>
+        <Color r="0" g="0" b="0"/>
+    </Font>
+
+    <Font name="SystemFont_Med1" font="Fonts\FRIZQT__.TTF" virtual="true">
+        <FontHeight val="10"/>
+        <Color r="0" g="0" b="0" a=".5"/>
+    </Font>
+
     <!--
         PortraitFrame2X
         Template de frame virtuelle pour créer des cadres de portrait haute résolution avec bordures métalliques

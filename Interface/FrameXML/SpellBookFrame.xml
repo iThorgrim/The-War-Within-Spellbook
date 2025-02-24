@@ -1,6 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
+
 	<Script file="SpellBookFrame.lua"/>
+
 	<Frame name="SpellBookShineTemplate" inherits="AutoCastShineTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="30" y="30"/>
@@ -76,6 +78,7 @@
 		<NormalTexture file="Interface\SpellBook\UI-SpellBook-Tab-Unselected"/>
         <HighlightTexture file="Interface\SpellBook\UI-SpellbookPanel-Tab-Highlight" alphaMode="ADD"/>
     </Button>
+
 	<CheckButton name="SpellButtonTemplate" inherits="SecureFrameTemplate" virtual="true">
 		<Size>
 			<AbsDimension x="37" y="37"/>

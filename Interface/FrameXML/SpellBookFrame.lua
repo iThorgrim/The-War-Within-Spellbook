@@ -74,7 +74,7 @@ function SpellBookFrame_OnEvent(self, event, ...)
 end
 
 function SpellBookFrame_OnShow(self)
-	SpellBookFrame_Update(1);
+--[[	SpellBookFrame_Update(1);
 	
 	-- If there are tabs waiting to flash, then flash them... yeah..
 	if ( self.flashTabs ) then
@@ -86,6 +86,9 @@ function SpellBookFrame_OnShow(self)
 	UpdateMicroButtons();
 
 	SpellBookFrame_PlayOpenSound();
+]]--
+	self:Hide()
+	PlayerSpellsFrame:Show()
 end
 
 function SpellBookFrame_Update(showing)
@@ -357,6 +360,7 @@ function SpellButton_OnModifiedClick(self, button)
 	if ( id > MAX_SPELLS ) then
 		return;
 	end
+
 	if ( IsModifiedClick("CHATLINK") ) then
 		if ( MacroFrame and MacroFrame:IsShown() ) then
 			local spellName, subSpellName = GetSpellName(id, SpellBookFrame.bookType);
@@ -378,10 +382,12 @@ function SpellButton_OnModifiedClick(self, button)
 			return;
 		end
 	end
+
 	if ( IsModifiedClick("PICKUPACTION") ) then
 		PickupSpell(id, SpellBookFrame.bookType);
 		return;
 	end
+
 	if ( IsModifiedClick("SELFCAST") ) then
 		CastSpell(id, SpellBookFrame.bookType, true);
 		return;
@@ -390,9 +396,11 @@ end
 
 function SpellButton_OnDrag(self) 
 	local id = SpellBook_GetSpellID(self:GetID());
+
 	if ( id > MAX_SPELLS or not _G[self:GetName().."IconTexture"]:IsShown() ) then
 		return;
 	end
+
 	self:SetChecked(0);
 	PickupSpell(id, SpellBookFrame.bookType);
 end

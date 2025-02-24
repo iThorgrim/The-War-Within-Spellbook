@@ -147,6 +147,15 @@ AnimationSystem.lua
 LocalizationPost.xml
 
 ## custom modules
+GridSystem.lua
 UITemplate2X.xml
+PagedContentFrame.lua
 
+SpellBook/SpellBook_Core.lua
+SpellBook/SpellBook_Util.lua
+SpellBook/SpellBook_Filter.lua
+SpellBook/SpellBook_Animation.lua
+SpellBook/SpellBook_UI.lua
 SpellBook.xml
+SpellBook/SpellBook_PagingAdapter.lua
+
