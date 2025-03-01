@@ -9,14 +9,12 @@
         </Attributes>
 
         <Layers>
-            <Layer level="ARTWORK">
-                <Texture name="$parentBookTopBar" parentKey="BookTopBar" file="Interface/SpellBook/SpellbookBackgroundEvergreen" setAllPoints="true">
+            <Layer level="BACKGROUND">
+                <Texture name="$parentBookTopBar" parentKey="BookTopBar" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
                     <Size x="1100" y="54"/>
-
                     <Anchors>
                         <Anchor point="TOPLEFT"/>
                     </Anchors>
-
                     <TexCoords left="0.000488281" right="0.788574" top="0.000976562" bottom="0.0576172"/>
                 </Texture>
 
@@ -25,7 +23,6 @@
                         <Anchor point="TOPLEFT" y="-51"/>
                         <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
                     </Anchors>
-
                     <TexCoords left="0.446289" right="0.839844" top="0.0595703" bottom="0.845703"/>
                 </Texture>
 
@@ -34,7 +31,6 @@
                         <Anchor point="TOPLEFT" relativePoint="TOP" y="-51"/>
                         <Anchor point="BOTTOMRIGHT"/>
                     </Anchors>
-
                     <TexCoords left="0.000488281" right="0.394531" top="0.0595703" bottom="0.845703"/>
                 </Texture>
             </Layer>
@@ -42,11 +38,9 @@
             <Layer level="OVERLAY">
                 <Texture name="$parentBookmark" parentKey="Bookmark" file="Interface/SpellBook/SpellbookBackgroundEvergreen">
                     <Size x="102" y="557"/>
-
                     <Anchors>
                         <Anchor point="TOPRIGHT" relativeTo="$parentBookBGLeft" x="62" y="4"/>
                     </Anchors>
-
                     <TexCoords left="0.395508" right="0.445312" top="0.0595703" bottom="0.603516"/>
                 </Texture>
             </Layer>
@@ -55,25 +49,20 @@
         <Frames>
             <Frame name="$parentBookCornerFlipbook" parentKey="BookCornerFlipbook" enableMouse="true">
                 <Size x="32" y="32"/>
-
                 <Anchors>
                     <Anchor point="BOTTOMRIGHT" x="-18" y="10"/>
                 </Anchors>
-
                 <Layers>
                     <Layer>
                         <Texture name="$parentTexture" parentKey="Texture" file="Interface/SpellBook/SpellbookElements">
                             <Size x="128" y="128"/>
-
                             <Anchors>
                                 <Anchor point="BOTTOMRIGHT" x="8" y="-5"/>
                             </Anchors>
-
                             <TexCoords left="0.000976562" right="0.586914" top="0.000976562" bottom="0.303711"/>
                         </Texture>
                     </Layer>
                 </Layers>
-
                 <Scripts>
                     <OnShow function="SpellBookCorner_OnShow"/>
                 </Scripts>
@@ -94,17 +83,73 @@
                     <Anchors>
                         <Anchor point="CENTER" x="0" y="0"/>
                     </Anchors>
-                    
                     <TexCoords left="0.311523" right="0.561523" top="0.305664" bottom="0.368164"/>
                 </Texture>
             </Layer>
         </Layers>
 
         <Frames>
+            <!-- Conteneur pour l'icône façon portrait -->
+            <Frame parentKey="PortraitFrame">
+                <Size x="32" y="32"/>
+                <Anchors>
+                    <Anchor point="LEFT" x="5" y="0"/>
+                </Anchors>
+                
+                <Layers>
+                    <!-- Portrait (icône du sort) -->
+                    <Layer level="BORDER">
+                        <Texture parentKey="Portrait" file="Interface/Icons/INV_Misc_QuestionMark">
+                            <Size x="24" y="24"/>
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                    
+                    <!-- Bord du portrait -->
+                    <Layer level="ARTWORK">
+                        <Texture parentKey="ActiveBorder" file="Interface/SpellBook/SpellbookElements" alpha="1" hidden="true">
+                            <Size x="39" y="37.5"/>
+                            <Anchors>
+                                <Anchor point="CENTER" x="-3.3" y="-2"/>
+                            </Anchors>
+                            <TexCoords left="0.854492" right="0.989258" top="0.000976562" bottom="0.128906"/>
+                        </Texture>
+
+                        <Texture parentKey="PassiveBorder" file="Interface/SpellBook/SpellbookElements" alpha="1" hidden="true">
+                            <Size x="39" y="37.5"/>
+                            <Anchors>
+                                <Anchor point="CENTER" x="-3.3" y="-2"/>
+                            </Anchors>
+                            <TexCoords left="0.000976562" right="0.133789" top="0.411133" bottom="0.535156"/>
+                        </Texture>
+
+                        <Texture parentKey="ActiveHoverBorder" file="Interface/SpellBook/SpellbookElements" alpha="0.5" hidden="true">
+                            <Size x="39" y="37.5"/>
+                            <Anchors>
+                                <Anchor point="CENTER" x="-3.3" y="-2"/>
+                            </Anchors>
+                            <TexCoords left="0.000976562" right="0.129883" top="0.537109" bottom="0.65918"/>
+                        </Texture>
+                    </Layer>
+                    
+                    <!-- Couche pour les effets visuels -->
+                    <Layer level="OVERLAY">
+                        <Texture parentKey="Highlight" hidden="true" alphaMode="ADD">
+                            <Anchors>
+                                <Anchor point="CENTER"/>
+                            </Anchors>
+                        </Texture>
+                    </Layer>
+                </Layers>
+            </Frame>
+            
+            <!-- Conteneur pour le texte -->
             <Frame parentKey="TextContainer">
                 <Size x="100" y="30"/>
                 <Anchors>
-                    <Anchor point="LEFT" x="35" y="-2.5"/>
+                    <Anchor point="LEFT" x="40" y="-2.5"/>
                 </Anchors>
 
                 <Layers>
@@ -126,7 +171,22 @@
                     </Layer>
                 </Layers>
             </Frame>
+            
+            <!-- Cooldown -->
+            <Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hidden="true">
+                <Anchors>
+                    <Anchor point="CENTER" relativeKey="$parent.PortraitFrame" relativePoint="CENTER"/>
+                </Anchors>
+                <Size x="24" y="24"/>
+            </Cooldown>
         </Frames>
+
+        <Scripts>
+            <OnLoad>
+                -- Compatibilité avec le code existant
+                self.icon = self.PortraitFrame.Portrait
+            </OnLoad>
+        </Scripts>
     </Button>
 
     <Frame name="SpellBookHeaderTemplate" virtual="true">
@@ -175,7 +235,7 @@
         </Anchors>
 
         <Frames>
-            <Frame parentKey="SpellBookFrame" frameLevel="100" hidden="false">
+            <Frame name="$parentSpellBookFrame" parentKey="SpellBookFrame" frameLevel="100" hidden="false">
                 <Size x="1100" y="650"/>
 
                 <Anchors>
@@ -195,6 +255,80 @@
                         <Anchors>
                             <Anchor point="TOPRIGHT" x="30" y="-80"/>
                         </Anchors>
+
+                        <Frames>
+                            <Button name="$parentPrevPageButton" parentKey="PrevPageButton" toplevel="true" enableMouse="true">
+                                <Size>
+                                    <AbsDimension x="32" y="32"/>
+                                </Size>
+
+                                <Anchors>
+                                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-150" y="0"/>
+                                </Anchors>
+
+                                <Scripts>
+                                    <OnClick>
+                                        local currentPage = PlayerSpellsFrame.SpellBookFrame.currentPage
+                                        if currentPage > 1 then
+                                            PlayerSpellsFrame.SpellBookFrame:SetCurrentPageWithFade(currentPage - 1)
+                                        end
+                                    </OnClick>
+                                </Scripts>
+
+                                <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+                                <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+                                <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+                                <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+                            </Button>
+
+                            <Button name="$parentNextPageButton" parentKey="NextPageButton">
+                                <Size>
+                                    <AbsDimension x="32" y="32"/>
+                                </Size>
+
+                                <Anchors>
+                                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-110" y="0"/>
+                                </Anchors>
+
+                                <Scripts>
+                                    <OnClick>
+                                        local currentPage = PlayerSpellsFrame.SpellBookFrame.currentPage
+                                        local maxPages = PlayerSpellsFrame.SpellBookFrame.maxPages
+                                        if not (currentPage > maxPages) then
+                                            PlayerSpellsFrame.SpellBookFrame:SetCurrentPageWithFade(currentPage + 1)
+                                        end
+                                    </OnClick>
+
+                                    <OnEnter>
+                                        SpellBookCorner_OnEnter(PlayerSpellsFrame.BookCornerFlipbook)
+                                    </OnEnter>
+
+                                    <OnLeave>
+                                        SpellBookCorner_OnLeave(PlayerSpellsFrame.BookCornerFlipbook)
+                                    </OnLeave>
+                                </Scripts>
+
+                                <NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+                                <PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+                                <DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+                                <HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+                            </Button>
+
+                            <Frame name="$parentPageText" parentKey="PageText">
+                                <Size x="60" y="30"/>
+
+                                <Anchors>
+                                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-190" y="2"/>
+                                </Anchors>
+
+                                <Layers>
+                                    <Layer level="OVERLAY">
+                                        <FontString name="$parentValue" parentKey="Value" font="GameFontNormal" setAllPoints="true" text="Page 1 / 1" justifyH="RIGHT"/>
+                                    </Layer>
+                                </Layers>
+                            </Frame>
+
+                        </Frames>
                     </Frame>
                 </Frames>
 
@@ -204,11 +338,6 @@
                 </Attributes>
             </Frame>
         </Frames>
-
-        <Attributes>
-            <Attribute name="minimizedWidth" type="number" value="809"/>
-            <Attribute name="maximizedWidth" type="number" value="1618"/>
-        </Attributes>
 
         <Scripts>
             <OnLoad>

@@ -1,9 +1,9 @@
--- Create the Adapter module
+-- Créer le module Adapter
 SpellBook_PagingAdapter = {}
 
 --[[
- * Initialize the adapter and ensure the SpellBook is compatible
- * with the new version of PagedContentFrame
+ * Initialise l'adaptateur et s'assure que le SpellBook est compatible
+ * avec la nouvelle version de PagedContentFrame
  *
  * @return void
 ]]
@@ -12,14 +12,14 @@ function SpellBook_PagingAdapter:Initialize()
 end
 
 --[[
- * Configure compatibility between the new pagination system
- * and existing SpellBook frames
+ * Configure la compatibilité entre le nouveau système de pagination
+ * et les frames SpellBook existantes
  *
  * @return void
 ]]
 function SpellBook_PagingAdapter:SetupCompatibility()
     if not SpellBook_UI or not SpellBook_UI.PlayerFrame then
-        print("SpellBook: Paging adapter could not find player frame")
+        print("SpellBook: L'adaptateur de pagination n'a pas pu trouver le frame du joueur")
         return
     end
 
@@ -27,14 +27,14 @@ function SpellBook_PagingAdapter:SetupCompatibility()
     local spellBookFrame = frame.SpellBookFrame
 
     if not spellBookFrame then
-        print("SpellBook: SpellBook frame not found")
+        print("SpellBook: Frame du grimoire introuvable")
         return
     end
 
-    -- Configure the render mode
+    -- Configurer le mode de rendu
     spellBookFrame.renderMode = PagedContent.RenderMode.GRID
 
-    -- Configuration for compatibility
+    -- Configuration pour la compatibilité
     local config = {
         viewsPerPage = 2,
         itemsPerView = 25,
@@ -50,44 +50,38 @@ function SpellBook_PagingAdapter:SetupCompatibility()
         fadeInDuration = 0.2,
         animationDelay = 0.1,
         throttleTime = 1.0,
-        -- Number of additional spells to display when there's no header
+        -- Nombre de sorts supplémentaires à afficher quand il n'y a pas de header
         extraRowsWithoutHeader = 2
     }
 
-    -- Apply the configuration
+    -- Appliquer la configuration
     spellBookFrame:Configure(config)
 
-    -- Replace the element distribution method to account for additional rows
+    -- Remplacer la méthode de distribution des éléments pour prendre en compte les lignes supplémentaires
     self:ApplyCustomDistribution(spellBookFrame)
 
-    -- Define a fallback for empty data (in case of search with no results)
+    -- Définir un fallback pour les données vides (en cas de recherche sans résultat)
     spellBookFrame:SetEmptyDataProviderFallback(function()
         return SpellBook_SpellFilter:FilterAllSpells()
     end)
 
-    -- Adapt existing methods to maintain compatibility
+    -- Adapter les méthodes existantes pour préserver la compatibilité
     self:AdaptMethods(spellBookFrame)
 end
 
---[[
- * Apply custom distribution method that accounts for additional rows
- *
- * @param spellBookFrame table The main SpellBook frame
- * @return void
-]]
 function SpellBook_PagingAdapter:ApplyCustomDistribution(spellBookFrame)
     if not spellBookFrame.originalSplitElementsIntoGrid then
         spellBookFrame.originalSplitElementsIntoGrid = spellBookFrame.SplitElementsIntoGrid
     end
 
-    -- New method that accounts for additional rows
+    -- Nouvelle méthode qui prend en compte les lignes supplémentaires
     spellBookFrame.SplitElementsIntoGrid = function(self)
         local views = {}
         local currentView = {}
         local currentHeight = 0
         local viewHeight = self.ViewFrames[1]:GetHeight()
 
-        -- Adaptive configuration
+        -- Configuration adaptative
         local headerHeight = self.config.headerHeight or 30
         local headerTopMargin = self.config.headerTopMargin or 15
         local headerBottomMargin = self.config.headerBottomMargin or 10
@@ -95,25 +89,25 @@ function SpellBook_PagingAdapter:ApplyCustomDistribution(spellBookFrame)
         local rowSpacing = self.config.rowSpacing or 15
         local itemsPerRow = self.config.maxColumnsPerRow or 3
 
-        -- Default and additional number of spells
+        -- Nombre de sorts par défaut et supplémentaires
         local baseMaxItemsPerView = self.config.itemsPerView or 25
         local extraRows = self.config.extraRowsWithoutHeader or 2
         local extraItemsWithoutHeader = extraRows * itemsPerRow
 
-        -- Variable to track if current view contains a header
+        -- Variable pour suivre si la vue courante contient un header
         local currentViewHasHeader = false
 
         for _, group in ipairs(self.dataProvider) do
-            -- Check if this group contains a header
+            -- Vérifier si ce groupe contient un header
             local hasHeader = (group.header ~= nil)
             local elementsCount = #(group.elements or {})
 
-            -- If this group has a header
+            -- Si ce groupe a un header
             if hasHeader then
-                -- Check if there's enough space for the header
+                -- Vérifier s'il y a assez d'espace pour le header
                 if currentHeight + headerHeight + headerTopMargin + headerBottomMargin > viewHeight or
                         #currentView >= baseMaxItemsPerView then
-                    -- Finish current view and start a new one
+                    -- Terminer la vue actuelle et en commencer une nouvelle
                     if #currentView > 0 then
                         table.insert(views, currentView)
                         currentView = {}
@@ -122,39 +116,39 @@ function SpellBook_PagingAdapter:ApplyCustomDistribution(spellBookFrame)
                     end
                 end
 
-                -- Add header to the view
+                -- Ajouter le header à la vue
                 group.header._isHeader = true
                 table.insert(currentView, group.header)
                 currentHeight = currentHeight + headerHeight + headerTopMargin + headerBottomMargin
                 currentViewHasHeader = true
 
-                -- Limit to base number of elements
+                -- Limiter au nombre de base d'éléments
                 maxItemsPerView = baseMaxItemsPerView
             elseif not currentViewHasHeader and #currentView == 0 then
-                -- If this view doesn't have a header yet, we can display more elements
+                -- Si cette vue n'a pas encore de header, on peut afficher plus d'éléments
                 maxItemsPerView = baseMaxItemsPerView + extraItemsWithoutHeader
             end
 
-            -- Process elements by rows for grid mode
+            -- Traiter les éléments par rangées pour le mode grille
             local currentPos = 0
 
             while currentPos < elementsCount do
                 local remainingInRow = math.min(itemsPerRow, elementsCount - currentPos)
 
-                -- Check if we need a new view
+                -- Vérifier si on a besoin d'une nouvelle vue
                 if currentHeight + rowHeight + rowSpacing > viewHeight or
                         #currentView + remainingInRow > maxItemsPerView then
-                    -- Finish current view and start a new one
+                    -- Terminer la vue actuelle et en commencer une nouvelle
                     table.insert(views, currentView)
                     currentView = {}
                     currentHeight = 0
                     currentViewHasHeader = false
 
-                    -- Update max elements for new view
+                    -- Mise à jour du nombre max d'éléments pour la nouvelle vue
                     maxItemsPerView = baseMaxItemsPerView + extraItemsWithoutHeader
                 end
 
-                -- Add elements in this row
+                -- Ajouter les éléments de cette rangée
                 for i = 1, remainingInRow do
                     local element = group.elements[currentPos + i]
                     element._gridPosition = i
@@ -167,7 +161,7 @@ function SpellBook_PagingAdapter:ApplyCustomDistribution(spellBookFrame)
             end
         end
 
-        -- Add the last view if not empty
+        -- Ajouter la dernière vue si non vide
         if #currentView > 0 then
             table.insert(views, currentView)
         end
@@ -177,68 +171,68 @@ function SpellBook_PagingAdapter:ApplyCustomDistribution(spellBookFrame)
 end
 
 --[[
- * Adapt existing methods to maintain compatibility with code 
- * that uses the old version of PagedContentFrame
+ * Adapte les méthodes existantes pour conserver la compatibilité
+ * avec le code qui utilise l'ancienne version de PagedContentFrame
  *
- * @param spellBookFrame table The main SpellBook frame
+ * @param spellBookFrame table Le frame principal du SpellBook
  * @return void
 ]]
 function SpellBook_PagingAdapter:AdaptMethods(spellBookFrame)
-    -- Ensure these methods remain compatible with existing code
+    -- S'assurer que ces méthodes restent compatibles avec le code existant
 
-    -- Save original SetDataProvider method
+    -- Sauvegarde de la méthode originale SetDataProvider
     if not spellBookFrame._orig_SetDataProvider then
         spellBookFrame._orig_SetDataProvider = spellBookFrame.SetDataProvider
     end
 
-    -- Replace with version that handles special cases for SpellBook
+    -- Remplacer par une version qui gère les cas spéciaux pour SpellBook
     spellBookFrame.SetDataProvider = function(self, dataProvider, preservePage)
-        -- For empty data, use fallback system
+        -- Pour les données vides, utiliser le système de fallback
         if not dataProvider or #dataProvider == 0 then
             if SpellBook_SpellFilter then
                 dataProvider = SpellBook_SpellFilter:FilterAllSpells()
             end
         end
 
-        -- Call original method
+        -- Appeler la méthode originale
         self:_orig_SetDataProvider(dataProvider, preservePage)
     end
 
-    -- Maintain compatibility with the old method
+    -- Préserver la compatibilité avec l'ancienne méthode
     if not spellBookFrame.SetDataProviderWithFade then
         spellBookFrame.SetDataProviderWithFade = function(self, dataProvider)
-            -- Check if the new method exists (it should exist now)
+            -- Vérifier si la nouvelle méthode existe (elle devrait exister maintenant)
             if self._orig_SetDataProviderWithFade then
                 return self:_orig_SetDataProviderWithFade(dataProvider)
             else
-                -- Fallback just in case
+                -- Fallback au cas où
                 self:SetDataProvider(dataProvider)
             end
         end
     end
 
-    -- Adapt UpdateElementDistribution to add hooks if needed
+    -- Adaptation de UpdateElementDistribution pour ajouter des hooks si nécessaire
     if not spellBookFrame._orig_UpdateElementDistribution then
         spellBookFrame._orig_UpdateElementDistribution = spellBookFrame.UpdateElementDistribution
 
         spellBookFrame.UpdateElementDistribution = function(self)
             self:_orig_UpdateElementDistribution()
 
-            -- Additional SpellBook-specific actions if needed
+            -- Actions supplémentaires spécifiques à SpellBook si nécessaire
             if SpellBook_UI and SpellBook_UI.UpdatePageText then
                 SpellBook_UI:UpdatePageText()
             end
         end
     end
 
-    -- Adapt DisplayCurrentPage to be compatible with existing hooks
+    -- Adapter DisplayCurrentPage pour la rendre compatible avec les hooks existants
     if not spellBookFrame._orig_DisplayCurrentPage then
         spellBookFrame._orig_DisplayCurrentPage = spellBookFrame.DisplayCurrentPage
 
         spellBookFrame.DisplayCurrentPage = function(self)
             self:_orig_DisplayCurrentPage()
 
-            -- Trigger UI update if needed
+            -- Déclencher une mise à jour de l'UI si nécessaire
             if SpellBook_UI and SpellBook_UI.OnPageChanged then
                 SpellBook_UI:OnPageChanged()
             end
@@ -247,12 +241,12 @@ function SpellBook_PagingAdapter:AdaptMethods(spellBookFrame)
 end
 
 --[[
- * Update pagination buttons to use the new system
+ * Met à jour les boutons de pagination pour qu'ils utilisent le nouveau système
  *
- * @param prevButton table Previous page button
- * @param nextButton table Next page button
- * @param pageText table Pagination text
- * @param spellBookFrame table Main SpellBook frame
+ * @param prevButton table Bouton page précédente
+ * @param nextButton table Bouton page suivante
+ * @param pageText table Texte de pagination
+ * @param spellBookFrame table Frame principal du SpellBook
  * @return void
 ]]
 function SpellBook_PagingAdapter:UpdatePaginationControls(prevButton, nextButton, pageText, spellBookFrame)
@@ -260,7 +254,7 @@ function SpellBook_PagingAdapter:UpdatePaginationControls(prevButton, nextButton
         return
     end
 
-    -- Update button behaviors
+    -- Mettre à jour les comportements des boutons
     prevButton:SetScript("OnClick", function()
         local currentPage = spellBookFrame.currentPage
         if currentPage > 1 then
@@ -276,7 +270,7 @@ function SpellBook_PagingAdapter:UpdatePaginationControls(prevButton, nextButton
         end
     end)
 
-    -- Update page text
+    -- Mettre à jour le texte de la page
     if pageText then
         spellBookFrame:RegisterCallback("OnPageChanged", function()
             if spellBookFrame.currentPage and spellBookFrame.maxPages then
@@ -285,7 +279,7 @@ function SpellBook_PagingAdapter:UpdatePaginationControls(prevButton, nextButton
         end)
     end
 
-    -- Store references
+    -- Stocker les références
     spellBookFrame.PagingButtons = {
         Prev = prevButton,
         Next = nextButton,
@@ -294,18 +288,18 @@ function SpellBook_PagingAdapter:UpdatePaginationControls(prevButton, nextButton
 end
 
 --[[
- * Utility function to convert old data formats to the new one
+ * Fonction utilitaire pour convertir d'anciens formats de données vers le nouveau
  *
- * @param oldData table Data in old format
- * @return table Data in format compatible with new PagedContentFrame
+ * @param oldData table Données au format ancien
+ * @return table Données au format compatible avec le nouveau PagedContentFrame
 ]]
 function SpellBook_PagingAdapter:ConvertDataFormat(oldData)
-    -- If format is already compatible, return as is
+    -- Si le format est déjà compatible, retourner tel quel
     if not oldData or type(oldData) ~= "table" then
         return oldData
     end
 
-    -- Check if data is already in the correct format
+    -- Vérifier si les données sont déjà au bon format
     local hasCorrectFormat = true
     for _, item in ipairs(oldData) do
         if not item.header or not item.elements then
@@ -318,13 +312,13 @@ function SpellBook_PagingAdapter:ConvertDataFormat(oldData)
         return oldData
     end
 
-    -- Convert old format to new
+    -- Convertir l'ancien format vers le nouveau
     local newData = {}
     local currentGroup = nil
 
     for _, item in ipairs(oldData) do
         if item.isHeader then
-            -- Create a new group
+            -- Créer un nouveau groupe
             currentGroup = {
                 header = {
                     templateKey = "Header",
@@ -334,7 +328,7 @@ function SpellBook_PagingAdapter:ConvertDataFormat(oldData)
             }
             table.insert(newData, currentGroup)
         elseif item.isElement and currentGroup then
-            -- Add element to current group
+            -- Ajouter l'élément au groupe courant
             table.insert(currentGroup.elements, item)
         end
     end
@@ -343,14 +337,14 @@ function SpellBook_PagingAdapter:ConvertDataFormat(oldData)
 end
 
 --[[
- * Enable or disable debug mode for PagedContentFrame
+ * Active ou désactive le mode debug pour PagedContentFrame
  *
- * @param enable boolean Enable or disable debug mode
+ * @param enable boolean Activer ou désactiver le mode debug
  * @return void
 ]]
 function SpellBook_PagingAdapter:EnableDebug(enable)
     if not SpellBook_UI or not SpellBook_UI.SpellBookFrame then
-        print("SpellBook: Unable to find SpellBook frame for debugging")
+        print("SpellBook: Impossible de trouver le frame du grimoire pour le debug")
         return
     end
 
@@ -358,99 +352,99 @@ function SpellBook_PagingAdapter:EnableDebug(enable)
 
     if spellBookFrame.EnableDebug then
         spellBookFrame:EnableDebug(enable or false)
-        print("SpellBook: Debug mode " .. (enable and "enabled" or "disabled"))
+        print("SpellBook: Mode debug " .. (enable and "activé" or "désactivé"))
     else
-        print("SpellBook: EnableDebug method not available")
+        print("SpellBook: La méthode EnableDebug n'est pas disponible")
     end
 end
 
 --[[
- * Check and fix common issues in PagedContentFrame implementation
+ * Vérifie et corrige les problèmes courants dans l'implémentation PagedContentFrame
  *
  * @return void
 ]]
 function SpellBook_PagingAdapter:DiagnoseAndFix()
     if not SpellBook_UI or not SpellBook_UI.SpellBookFrame then
-        print("SpellBook: Unable to find SpellBook frame for diagnosis")
+        print("SpellBook: Impossible de trouver le frame du grimoire pour le diagnostic")
         return
     end
 
     local spellBookFrame = SpellBook_UI.SpellBookFrame
     local problems = 0
 
-    print("|cFF00FF00Starting PagedContentFrame diagnosis:|r")
+    print("|cFF00FF00Début du diagnostic PagedContentFrame:|r")
 
-    -- Check if essential methods exist
+    -- Vérifier si les méthodes essentielles existent
     if not spellBookFrame.SetCurrentPageWithFade then
-        print("|cFFFF0000Error:|r Missing SetCurrentPageWithFade method")
+        print("|cFFFF0000Erreur:|r Méthode SetCurrentPageWithFade manquante")
         problems = problems + 1
     end
 
     if not spellBookFrame.SetDataProviderWithFade then
-        print("|cFFFF0000Error:|r Missing SetDataProviderWithFade method")
+        print("|cFFFF0000Erreur:|r Méthode SetDataProviderWithFade manquante")
         problems = problems + 1
     end
 
-    -- Check configuration
+    -- Vérifier la configuration
     if not spellBookFrame.config then
-        print("|cFFFF0000Error:|r Missing configuration")
+        print("|cFFFF0000Erreur:|r Configuration manquante")
         problems = problems + 1
     else
-        -- Check critical parameters
+        -- Vérifier les paramètres critiques
         if not spellBookFrame.config.viewsPerPage then
-            print("|cFFFF0000Error:|r Missing viewsPerPage parameter in configuration")
+            print("|cFFFF0000Erreur:|r Paramètre viewsPerPage manquant dans la configuration")
             problems = problems + 1
         end
     end
 
-    -- Check render mode
+    -- Vérifier le mode de rendu
     if not spellBookFrame.renderMode then
-        print("|cFFFF0000Error:|r Render mode not defined")
+        print("|cFFFF0000Erreur:|r Mode de rendu non défini")
         problems = problems + 1
     end
 
-    -- Check ViewFrames
+    -- Vérifier les ViewFrames
     if not spellBookFrame.ViewFrames or #spellBookFrame.ViewFrames == 0 then
-        print("|cFFFF0000Error:|r Missing or empty ViewFrames")
+        print("|cFFFF0000Erreur:|r ViewFrames manquants ou vides")
         problems = problems + 1
     end
 
-    -- Check pagination buttons
+    -- Vérifier les boutons de pagination
     if not spellBookFrame.PagingButtons then
-        print("|cFFFF0000Error:|r Missing pagination buttons")
+        print("|cFFFF0000Erreur:|r Boutons de pagination manquants")
         problems = problems + 1
     elseif not spellBookFrame.PagingButtons.Prev or not spellBookFrame.PagingButtons.Next then
-        print("|cFFFF0000Error:|r Missing Prev/Next buttons")
+        print("|cFFFF0000Erreur:|r Boutons Prev/Next manquants")
         problems = problems + 1
     end
 
-    -- Apply fixes if needed
+    -- Appliquer des correctifs si nécessaire
     if problems > 0 then
-        print(string.format("|cFFFF9900%d problem(s) detected. Attempting to fix...|r", problems))
+        print(string.format("|cFFFF9900%d problème(s) détecté(s). Tentative de correction...|r", problems))
 
-        -- Try to reset and reconfigure PagedContentFrame
+        -- Essayer de réinitialiser et reconfigurer le PagedContentFrame
         self:ResetAndReconfigure(spellBookFrame)
     else
-        print("|cFF00FF00No problems detected!|r")
+        print("|cFF00FF00Aucun problème détecté!|r")
     end
 
-    -- Force display update
+    -- Forcer une mise à jour de l'affichage
     if spellBookFrame.dataProvider then
-        print("Forcing display update...")
+        print("Mise à jour forcée de l'affichage...")
         spellBookFrame:SetDataProvider(spellBookFrame.dataProvider, true)
     end
 end
 
 --[[
- * Reset and reconfigure PagedContentFrame in case of problems
+ * Réinitialise et reconfigure PagedContentFrame en cas de problème
  *
- * @param spellBookFrame table The main SpellBook frame
+ * @param spellBookFrame table Le frame principal du SpellBook
  * @return void
 ]]
 function SpellBook_PagingAdapter:ResetAndReconfigure(spellBookFrame)
     if not spellBookFrame then return end
 
-    -- Recreate configuration
+    -- Recréer la configuration
     spellBookFrame.config = {
         viewsPerPage = 2,
         itemsPerView = 23,
@@ -468,81 +462,75 @@ function SpellBook_PagingAdapter:ResetAndReconfigure(spellBookFrame)
         throttleTime = 1.0
     }
 
-    -- Ensure render mode is defined
+    -- S'assurer que le mode de rendu est défini
     spellBookFrame.renderMode = PagedContent.RenderMode.GRID
 
-    -- Recheck ViewFrames
+    -- Revérifier les ViewFrames
     if not spellBookFrame.ViewFrames or #spellBookFrame.ViewFrames == 0 then
         if spellBookFrame.PageView1 and spellBookFrame.PageView2 then
             spellBookFrame.ViewFrames = {spellBookFrame.PageView1, spellBookFrame.PageView2}
-            print("ViewFrames reconfigured")
+            print("ViewFrames reconfigurés")
         else
-            print("|cFFFF0000Unable to reconfigure ViewFrames: PageView1/2 not found|r")
+            print("|cFFFF0000Impossible de reconfigurer les ViewFrames: PageView1/2 introuvables|r")
         end
     end
 
-    -- Recreate pagination buttons if needed
+    -- Recréer les boutons de pagination si nécessaire
     if not spellBookFrame.PagingButtons then
-        -- Buttons must be created by SpellBook_UI:CreatePaginationSystem
-        print("|cFFFF9900Pagination buttons must be recreated manually|r")
+        -- Les boutons doivent être créés par SpellBook_UI:CreatePaginationSystem
+        print("|cFFFF9900Les boutons de pagination doivent être recréés manuellement|r")
     end
 
-    -- Add flag to force update
+    -- Ajouter un flag pour forcer la mise à jour
     spellBookFrame.forceUpdate = true
 
-    print("|cFF00FF00Reconfiguration completed|r")
+    print("|cFF00FF00Reconfiguration terminée|r")
 end
 
---[[
- * Fix page synchronization issues
- *
- * @param spellBookFrame table The main SpellBook frame
- * @return boolean Whether the fix was successful
-]]
 function SpellBook_PagingAdapter:FixPageSynchronization(spellBookFrame)
     if not spellBookFrame then
-        print("SpellBook: SpellBook frame not found")
+        print("SpellBook: Frame du grimoire introuvable")
         return false
     end
 
-    print("Applying synchronization fixes...")
+    print("Application des correctifs de synchronisation...")
 
-    -- Define an explicit update function for page text
+    -- Définir une fonction de mise à jour explicite pour le texte de page
     if not spellBookFrame.PageText then
-        -- Look for pagination text
+        -- Chercher le texte de pagination
         for _, region in ipairs({spellBookFrame:GetRegions()}) do
             if region:GetObjectType() == "FontString" and region:GetText() and
                     region:GetText():match("Page %d+ / %d+") then
                 spellBookFrame.PageText = region
-                print("Pagination text automatically found")
+                print("Texte de pagination trouvé automatiquement")
                 break
             end
         end
     end
 
-    -- Ensure UpdatePageText method is available
+    -- S'assurer que la méthode UpdatePageText est disponible
     if not spellBookFrame.UpdatePageText then
         spellBookFrame.UpdatePageText = PagedContentFrameMixin.UpdatePageText
     end
 
-    -- Create a hook to ensure text is always up to date
+    -- Créer un hook pour s'assurer que le texte est toujours à jour
     if spellBookFrame.SetCurrentPage and not spellBookFrame._originalSetCurrentPage then
         spellBookFrame._originalSetCurrentPage = spellBookFrame.SetCurrentPage
 
         spellBookFrame.SetCurrentPage = function(self, pageNum)
             local result = self:_originalSetCurrentPage(pageNum)
-            -- Force text update
+            -- Forcer la mise à jour du texte
             self:UpdatePageText()
             return result
         end
     end
 
-    -- Force immediate update
+    -- Forcer une mise à jour immédiate
     if spellBookFrame.currentPage and spellBookFrame.maxPages then
         spellBookFrame:UpdatePageText()
     end
 
-    print("Synchronization fixes applied")
+    print("Correctifs de synchronisation appliqués")
     return true
 end
 
@@ -557,7 +545,7 @@ SlashCmdList["SBDIAG"] = function(msg)
             SpellBook_PagingAdapter:DiagnoseAndFix()
         end
     else
-        print("SpellBook: PagingAdapter module not available")
+        print("SpellBook: Module PagingAdapter non disponible")
     end
 end
 
@@ -566,9 +554,9 @@ SlashCmdList["SBFIXSYNC"] = function()
     if SpellBook_PagingAdapter and SpellBook_UI and SpellBook_UI.SpellBookFrame then
         SpellBook_PagingAdapter:FixPageSynchronization(SpellBook_UI.SpellBookFrame)
     else
-        print("SpellBook: Required components not available")
+        print("SpellBook: Composants requis non disponibles")
     end
 end
 
--- Initialize the adapter
+-- Initialiser l'adaptateur
 SpellBook_PagingAdapter:Initialize()

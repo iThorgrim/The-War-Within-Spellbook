@@ -58,7 +58,7 @@ function SpellBook_Util:GetSpellDescription(spellIndex, bookType)
         local line = _G["SpellDescriptionTooltipTextLeft" .. i]
         if line then
             local text = line:GetText()
-            if text and not text:match("^%s*Rang%s*%d+%s*$") and not text:match("^%s*Rank%s*%d+%s*$") then
+            if text and not text:match("^%s*Rang%s*%d+%s*$") then
                 description = description .. (description ~= "" and " " or "") .. text
             end
         end
@@ -104,15 +104,8 @@ function SpellBook_Util:GetMaxSpellRank(spellName)
     return maxRank
 end
 
---[[
- * Gets the required level for a spell from tooltip
- *
- * @param spellIndex number The index of the spell
- * @param bookType string The type of spellbook
- * @return number The required level for the spell
---]]
 function SpellBook_Util:GetSpellRequiredLevel(spellIndex, bookType)
-    -- Create a temporary invisible tooltip if needed
+    -- Créer un tooltip invisible temporaire si nécessaire
     if not self.levelTooltip then
         self.levelTooltip = CreateFrame("GameTooltip", "SpellLevelTooltip", nil, "GameTooltipTemplate")
         self.levelTooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
@@ -122,19 +115,18 @@ function SpellBook_Util:GetSpellRequiredLevel(spellIndex, bookType)
     tooltip:ClearLines()
     tooltip:SetSpell(spellIndex, bookType)
 
-    -- Check tooltip lines for required level
+    -- Parcourir les lignes du tooltip pour trouver celle avec le niveau requis
     for i = 2, tooltip:NumLines() do
         local line = _G["SpellLevelTooltipTextLeft" .. i]
         if line then
             local text = line:GetText()
             if text then
-                -- French version
                 local level = text:match("Niveau (%d+)")
                 if level then
                     return tonumber(level)
                 end
 
-                -- English version
+                -- Version anglaise
                 level = text:match("Requires Level (%d+)")
                 if level then
                     return tonumber(level)
@@ -143,18 +135,12 @@ function SpellBook_Util:GetSpellRequiredLevel(spellIndex, bookType)
         end
     end
 
-    -- If no required level is found, assume it's 1
+    -- Si aucun niveau requis n'est trouvé, on assume que c'est 1
     return 1
 end
 
---[[
- * Gets the available level for a spell from API
- *
- * @param spellID number The ID of the spell
- * @return number The available level for the spell
---]]
 function SpellBook_Util:GetSpellAvailableLevel(spellID)
-    -- Check if the function is available
+    -- Vérifier si la fonction est disponible
     if not GetSpellAvailableLevel then
         return nil
     end
@@ -162,24 +148,20 @@ function SpellBook_Util:GetSpellAvailableLevel(spellID)
     return GetSpellAvailableLevel(spellID)
 end
 
---[[
- * Gets the required level for a spell
- *
- * @param spellIndex number The index of the spell
- * @param bookType string The type of spellbook
- * @return number The required level for the spell
---]]
 function SpellBook_Util:GetRequiredLevel(spellIndex, bookType)
     local spellName, rank = GetSpellName(spellIndex, bookType)
     local spellID = nil
 
-    -- Method 1: Use tooltip (works in most cases)
+    -- Essayer d'obtenir l'ID du sort si nécessaire
+    -- Note: Dans WoW 3.3.5a, il n'y a pas de méthode directe pour obtenir l'ID
+
+    -- Méthode 1: Utiliser le tooltip (fonctionne dans la plupart des cas)
     local levelFromTooltip = self:GetSpellRequiredLevel(spellIndex, bookType)
     if levelFromTooltip and levelFromTooltip > 1 then
         return levelFromTooltip
     end
 
-    -- Method 2: Use GetSpellAvailableLevel if available
+    -- Méthode 2: Utiliser GetSpellAvailableLevel si disponible
     if spellID then
         local levelFromAPI = self:GetSpellAvailableLevel(spellID)
         if levelFromAPI then
@@ -187,6 +169,11 @@ function SpellBook_Util:GetRequiredLevel(spellIndex, bookType)
         end
     end
 
-    -- Default to level 1
+    -- Méthode 3: Utiliser notre table de données locales
+    -- if spellID and self.SpellLevelData[spellID] then
+    --    return self.SpellLevelData[spellID]
+    -- end
+
+    -- Si toutes les méthodes échouent, retourner 1 par défaut
     return 1
 end

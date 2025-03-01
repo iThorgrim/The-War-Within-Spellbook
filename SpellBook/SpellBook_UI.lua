@@ -1,12 +1,12 @@
 SpellBook_UI = {}
 
 -- ==========================================
--- Private constants
+-- Constantes privées
 -- ==========================================
-local DEFAULT_SEARCH_TEXT = "Search for a spell..."
+local DEFAULT_SEARCH_TEXT = "Rechercher un sort..."
 
 -- ==========================================
--- Internal module state
+-- État interne du module
 -- ==========================================
 local state = {
     isInitialized = false,
@@ -19,7 +19,7 @@ local state = {
 }
 
 -- ==========================================
--- Private event handlers
+-- Gestionnaires d'événements privés
 -- ==========================================
 local eventHandlers = {
     SPELLS_CHANGED = function()
@@ -36,7 +36,7 @@ local eventHandlers = {
 }
 
 -- ==========================================
--- UI Element Factory
+-- Factory pour la création d'éléments UI
 -- ==========================================
 local UIFactory = {
     CreateRankFilterCheckbox = function(parent)
@@ -46,7 +46,7 @@ local UIFactory = {
 
         local text = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         text:SetPoint("LEFT", checkbox, "RIGHT", 0, 0)
-        text:SetText("Show all ranks")
+        text:SetText("Afficher tous les rangs")
 
         checkbox:SetHitRectInsets(-100, 0, 0, 0)
 
@@ -64,7 +64,7 @@ local UIFactory = {
 }
 
 -- ==========================================
--- Private functions for SpellBook_UI
+-- Fonctions privées pour le SpellBook_UI
 -- ==========================================
 local function SetupSearchBox(searchBox)
     searchBox:SetText(DEFAULT_SEARCH_TEXT)
@@ -143,7 +143,7 @@ end
 
 local function SetupSpellButtonTemplate(spellBookFrame)
     spellBookFrame:SetElementTemplateData({
-        ["Spell"] = {
+        ["Sort"] = {
             template = "SpellBookItemTemplate",
             initFunc = function(button, data)
                 local spellName, rank = GetSpellName(data.spellIndex, data.bookType)
@@ -204,8 +204,10 @@ local function SetupSpellButtonTemplate(spellBookFrame)
                     if not self.isPassive then
                         self.PortraitFrame.ActiveHoverBorder:Show()
                         
+                        -- Ajouter l'effet de surbrillance sur les barres d'action
                         local spellName = GetSpellName(self.spellIndex, data.bookType)
                         if spellName then
+                            -- Vérifier si le module ActionHighlight est disponible
                             if SpellBook_ActionHighlight then
                                 SpellBook_ActionHighlight:HighlightSpellActionButton(spellName)
                             end
@@ -220,6 +222,7 @@ local function SetupSpellButtonTemplate(spellBookFrame)
                         self.PortraitFrame.ActiveHoverBorder:Hide()
                     end
                     
+                    -- Désactiver les effets de surbrillance
                     if SpellBook_ActionHighlight then
                         SpellBook_ActionHighlight:ClearAllEffects()
                     end
@@ -256,6 +259,7 @@ local function SetupSpellButtonTemplate(spellBookFrame)
     })
 end
 
+-- Configure le mixine PagedContent pour le SpellBook
 local function SetupPagedContentMixin(parentFrame)
     local spellBookFrame = parentFrame.SpellBookFrame
     local pageView1 = spellBookFrame.PageView1
@@ -290,11 +294,11 @@ local function SetupPagedContentMixin(parentFrame)
 end
 
 -- ==========================================
--- Public API for SpellBook_UI module
+-- API publique du module SpellBook_UI
 -- ==========================================
 
 --[[
-    Initialize the UI module and set up event handling
+    Initialise le module UI et met en place la gestion des événements
     
     @return void
 ]]--
@@ -316,7 +320,7 @@ function SpellBook_UI:Initialize()
 end
 
 --[[
-    Update cooldowns for all spell buttons in the spellbook
+    Met à jour les cooldowns pour tous les boutons de sort dans le grimoire
     
     @return void
 ]]--
@@ -340,7 +344,7 @@ function SpellBook_UI:UpdateCooldowns()
 end
 
 --[[
-    Update spellbook content based on current filters and search criteria
+    Met à jour le contenu du grimoire en fonction des filtres et critères de recherche actuels
     
     @return void
 ]]--
@@ -381,9 +385,9 @@ function SpellBook_UI:UpdateSpellBookContent()
 end
 
 --[[
-    Create pagination controls for the spellbook
+    Crée les contrôles de pagination pour le grimoire
     
-    @param {table} parentFrame The parent frame to attach pagination controls to
+    @param {table} parentFrame Le frame parent auquel attacher les contrôles de pagination
     @return void
 ]]--
 function SpellBook_UI:CreatePaginationSystem(parentFrame)
@@ -399,9 +403,9 @@ function SpellBook_UI:CreatePaginationSystem(parentFrame)
 end
 
 --[[
-    Create filter controls for the spellbook
+    Crée les contrôles de filtrage pour le grimoire
     
-    @param {table} parentFrame The parent frame to attach filter controls to
+    @param {table} parentFrame Le frame parent auquel attacher les contrôles de filtrage
     @return void
 ]]--
 function SpellBook_UI:CreateFilterControls(parentFrame)
@@ -421,13 +425,13 @@ function SpellBook_UI:CreateFilterControls(parentFrame)
 end
 
 -- ==========================================
--- Public functions called by external events
+-- Fonctions publiques appelées par les events externes
 -- ==========================================
 
 --[[
-    Handler for player spells frame loading
+    Handler pour le chargement du frame des sorts du joueur
     
-    @param {table} frame The main player spells frame
+    @param {table} frame Le frame principal des sorts du joueur
     @return void
 ]]--
 function PlayerSpellsFrame_OnLoad(frame)
@@ -448,9 +452,9 @@ function PlayerSpellsFrame_OnLoad(frame)
 end
 
 --[[
-    Handler for player spells frame showing
+    Handler pour l'affichage du frame des sorts du joueur
     
-    @param {table} frame The main player spells frame
+    @param {table} frame Le frame principal des sorts du joueur
     @return void
 ]]--
 function PlayerSpellsFrame_OnShow(frame)
@@ -469,134 +473,27 @@ function PlayerSpellsFrame_OnShow(frame)
 end
 
 -- ==========================================
--- Module initialization
+-- Initialisation du module
 -- ==========================================
 
--- Initialize the module
+-- Shim pour C_Timer.After si non disponible
+if not C_Timer then
+    C_Timer = {}
+    function C_Timer.After(delay, callback)
+        local frame = CreateFrame("Frame")
+        frame.elapsed = 0
+        frame.delay = delay
+        frame.callback = callback
+        
+        frame:SetScript("OnUpdate", function(self, elapsed)
+            self.elapsed = self.elapsed + elapsed
+            if self.elapsed >= self.delay then
+                self:SetScript("OnUpdate", nil)
+                self.callback()
+            end
+        end)
+    end
+end
+
+-- Initialiser le module
 SpellBook_UI:Initialize()
-
---[[
- * Récupère la description d'un sort à partir de son ID,
- * même si le joueur n'a pas encore appris ce sort.
- *
- * @param spellID number L'identifiant du sort
- * @return string La description du sort ou une chaîne vide si non trouvée
---]]
-function GetSpellDescriptionByID(spellID)
-    local tooltipName = "SpellInfoTooltip"
-    local tooltip = _G[tooltipName]
-
-    if not tooltip then
-        tooltip = CreateFrame("GameTooltip", tooltipName, nil, "GameTooltipTemplate")
-        tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
-    end
-
-    tooltip:ClearLines()
-    tooltip:SetHyperlink("spell:" .. spellID)
-
-    local description = ""
-    for i = 2, tooltip:NumLines() do
-        local textLeft = _G[tooltipName .. "TextLeft" .. i]
-
-        if textLeft then
-            local text = textLeft:GetText()
-            if text and not text:match("^%s*Rank%s*%d+%s*$") and not text:match("^%s*Level%s*%d+%s*$") then
-                if description ~= "" then
-                    description = description .. " "
-                end
-                description = description .. text
-            end
-        end
-    end
-
-    return description
-end
-
---[[
- * Version améliorée qui sépare la description du coût du sort,
- * du temps d'incantation et d'autres métadonnées.
- *
- * @param spellID number L'identifiant du sort
- * @return table Table contenant description, coût, temps d'incantation, etc.
---]]
-function GetDetailedSpellInfoByID(spellID)
-    local tooltipName = "SpellInfoTooltip"
-    local tooltip = _G[tooltipName]
-
-    if not tooltip then
-        tooltip = CreateFrame("GameTooltip", tooltipName, nil, "GameTooltipTemplate")
-        tooltip:SetOwner(WorldFrame, "ANCHOR_NONE")
-    end
-
-    tooltip:ClearLines()
-    tooltip:SetHyperlink("spell:" .. spellID)
-
-    local result = {
-        name = "",
-        description = "",
-        castTime = "",
-        cooldown = "",
-        cost = "",
-        range = "",
-        requiredLevel = nil
-    }
-
-    -- Récupérer le nom du sort depuis la première ligne
-    local nameText = _G[tooltipName .. "TextLeft1"]
-    if nameText then
-        result.name = nameText:GetText() or ""
-    end
-
-    -- Parcourir toutes les lignes pour extraire les différentes informations
-    for i = 2, tooltip:NumLines() do
-        local line = _G[tooltipName .. "TextLeft" .. i]
-
-        if line then
-            local text = line:GetText()
-
-            if text then
-                -- Extraire le temps d'incantation
-                if text:match("^%d+%.?%d*%s+sec%s+d'incantation$") or
-                        text:match("^%d+%.?%d*%s+sec%s+cast$") then
-                    result.castTime = text
-
-                    -- Extraire le coût en mana/rage/énergie
-                elseif text:match("^%d+%s+[Mm]ana$") or
-                        text:match("^%d+%s+[Rr]age$") or
-                        text:match("^%d+%s+[Éé]nergie$") or
-                        text:match("^%d+%s+[Ee]nergy$") then
-                    result.cost = text
-
-                    -- Extraire la portée
-                elseif text:match("^%d+%s+m$") or
-                        text:match("^%d+%s+yd$") then
-                    result.range = text
-
-                    -- Extraire le temps de recharge
-                elseif text:match("Recharge %d+%.?%d*%s+sec") or
-                        text:match("Cooldown %d+%.?%d*%s+sec") then
-                    result.cooldown = text
-
-                    -- Extraire le niveau requis
-                elseif text:match("Niveau %d+") or
-                        text:match("Requires Level %d+") then
-                    result.requiredLevel = tonumber(text:match("%d+"))
-
-                    -- Ajouter à la description (si ce n'est pas une métadonnée)
-                else
-                    if result.description ~= "" then
-                        result.description = result.description .. " "
-                    end
-                    result.description = result.description .. text
-                end
-            end
-        end
-    end
-
-    return result
-end
-
--- Exemple d'utilisation:
-local description = GetSpellDescriptionByID(100)
-print(description)
-local spellInfo = GetDetailedSpellInfoByID(12345)

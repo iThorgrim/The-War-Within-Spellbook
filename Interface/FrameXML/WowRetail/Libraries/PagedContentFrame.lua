@@ -1,20 +1,20 @@
 --[[
- * PagedContentFrame pour WoW 3.3.5a
- * Un système de pagination modulaire et générique pour afficher des éléments sur plusieurs pages
+ * PagedContentFrame for WoW 3.3.5a
+ * A modular, generic pagination system for displaying elements across multiple pages
  *
  * @version 2.0
  * @author iThorgrim (Refactored by Claude)
  *
- * Système conçu pour être réutilisable dans différents types d'addons
+ * System designed to be reusable in different types of addons
 ]]
 
--- Namespace global pour le framework
+-- Global namespace for the framework
 PagedContent = PagedContent or {}
 
--- Mixin principal
+-- Main mixin
 PagedContentFrameMixin = {}
 
--- Configuration par défaut
+-- Default configuration
 PagedContent.DefaultConfig = {
     viewsPerPage = 1,
     itemsPerView = 25,
@@ -33,20 +33,20 @@ PagedContent.DefaultConfig = {
     throttleTime = 1.0
 }
 
--- Options de rendu
+-- Render options
 PagedContent.RenderMode = {
-    LIST = "LIST",          -- Affichage vertical en liste
-    GRID = "GRID",          -- Affichage en grille
-    CUSTOM = "CUSTOM"       -- Mode personnalisé (requiert un renderer)
+    LIST = "LIST",          -- Vertical list display
+    GRID = "GRID",          -- Grid display
+    CUSTOM = "CUSTOM"       -- Custom mode (requires a renderer)
 }
 
 --[[
- * Système de Pool pour la réutilisation des frames
+ * Pool system for frame reuse
  *
- * @param frameType string Type de frame à créer
- * @param parent table Parent pour les nouvelles frames
- * @param template string Template à utiliser (facultatif)
- * @return table Instance du pool
+ * @param frameType string Type of frame to create
+ * @param parent table Parent for new frames
+ * @param template string Template to use (optional)
+ * @return table Pool instance
 ]]
 function PagedContent:CreateFramePool(frameType, parent, template)
     local pool = {
@@ -56,7 +56,7 @@ function PagedContent:CreateFramePool(frameType, parent, template)
         numActive = 0,
         frames = {},
 
-        -- Acquérir une frame du pool
+        -- Acquire a frame from the pool
         Acquire = function(self)
             self.numActive = self.numActive + 1
 
@@ -69,7 +69,7 @@ function PagedContent:CreateFramePool(frameType, parent, template)
             return frame
         end,
 
-        -- Libérer toutes les frames
+        -- Release all frames
         ReleaseAll = function(self)
             for i = 1, self.numActive do
                 if self.frames[i] then
@@ -85,7 +85,7 @@ function PagedContent:CreateFramePool(frameType, parent, template)
 end
 
 --[[
- * Initialisation du mixin PagedContent
+ * PagedContent mixin initialization
  *
  * @return void
 ]]
@@ -94,7 +94,7 @@ function PagedContentFrameMixin:OnLoad()
     self.frames = {}
     self.isAnimating = false
 
-    -- Fusionner avec la configuration par défaut
+    -- Merge with default configuration
     self.config = self.config or {}
     for k, v in pairs(PagedContent.DefaultConfig) do
         if self.config[k] == nil then
@@ -102,7 +102,7 @@ function PagedContentFrameMixin:OnLoad()
         end
     end
 
-    -- Utiliser les ViewFrames fournis ou créer des frames par défaut
+    -- Use provided ViewFrames or create default frames
     if not self.ViewFrames or #self.ViewFrames == 0 then
         self:CreateDefaultViewFrames()
     end
@@ -112,17 +112,17 @@ function PagedContentFrameMixin:OnLoad()
     self.maxPages = 1
     self.renderMode = self.renderMode or PagedContent.RenderMode.LIST
 
-    -- Callbacks et événements
+    -- Callbacks and events
     self.callbacks = {}
 
-    -- Créer les contrôles de pagination par défaut si nécessaire
+    -- Create default pagination controls if needed
     if not self.noPagingControls then
         self:CreatePagingControls()
     end
 end
 
 --[[
- * Crée des ViewFrames par défaut si aucun n'est fourni
+ * Create default ViewFrames if none provided
  *
  * @return void
 ]]
@@ -145,9 +145,9 @@ function PagedContentFrameMixin:CreateDefaultViewFrames()
 end
 
 --[[
- * Définit les templates d'éléments à utiliser
+ * Set element templates to use
  *
- * @param templateData table Données des templates
+ * @param templateData table Template data
  * @return void
 ]]
 function PagedContentFrameMixin:SetElementTemplateData(templateData)
@@ -155,9 +155,9 @@ function PagedContentFrameMixin:SetElementTemplateData(templateData)
 end
 
 --[[
- * Configure un mode de rendu personnalisé
+ * Configure custom render mode
  *
- * @param renderer function Fonction de rendu personnalisée
+ * @param renderer function Custom render function
  * @return void
 ]]
 function PagedContentFrameMixin:SetCustomRenderer(renderer)
@@ -166,15 +166,15 @@ function PagedContentFrameMixin:SetCustomRenderer(renderer)
 end
 
 --[[
- * Définit le provider de données
+ * Set data provider
  *
- * @param dataProvider table Données à afficher
- * @param preservePage boolean Conserver la page actuelle (facultatif)
+ * @param dataProvider table Data to display
+ * @param preservePage boolean Preserve current page (optional)
  * @return void
 ]]
 function PagedContentFrameMixin:SetDataProvider(dataProvider, preservePage)
     if not self.elementTemplateData then
-        error("SetElementTemplateData doit être appelé avant SetDataProvider")
+        error("SetElementTemplateData must be called before SetDataProvider")
     end
 
     self:ReleaseAllPools()
@@ -189,12 +189,12 @@ function PagedContentFrameMixin:SetDataProvider(dataProvider, preservePage)
 end
 
 --[[
- * Met à jour la distribution des éléments sur les pages
+ * Update element distribution across pages
  *
  * @return void
 ]]
 function PagedContentFrameMixin:UpdateElementDistribution()
-    -- Utiliser la méthode de distribution appropriée selon le mode de rendu
+    -- Use appropriate distribution method based on render mode
     if self.renderMode == PagedContent.RenderMode.LIST then
         self.viewDataList = self:SplitElementsIntoViews()
     elseif self.renderMode == PagedContent.RenderMode.GRID then
@@ -202,23 +202,23 @@ function PagedContentFrameMixin:UpdateElementDistribution()
     elseif self.renderMode == PagedContent.RenderMode.CUSTOM and self.customSplitter then
         self.viewDataList = self.customSplitter(self.dataProvider, self.config)
     else
-        -- Par défaut, utiliser le mode liste
+        -- Default to list mode
         self.viewDataList = self:SplitElementsIntoViews()
     end
 
-    -- Mettre à jour le nombre maximal de pages
+    -- Update max pages
     self.maxPages = math.max(1, math.ceil(#self.viewDataList / self.viewsPerPage))
 
-    -- Valider la page courante
+    -- Validate current page
     if self.currentPage > self.maxPages then
         self.currentPage = self.maxPages
     end
 end
 
 --[[
- * Répartit les éléments en vues pour le mode liste
+ * Split elements into views for list mode
  *
- * @return table Liste des vues avec leurs éléments
+ * @return table List of views with their elements
 ]]
 function PagedContentFrameMixin:SplitElementsIntoViews()
     local views = {}
@@ -253,7 +253,7 @@ function PagedContentFrameMixin:SplitElementsIntoViews()
         end
     end
 
-    -- Ajouter la dernière vue si non vide
+    -- Add last view if not empty
     if #currentView > 0 then
         table.insert(views, currentView)
     end
@@ -262,9 +262,9 @@ function PagedContentFrameMixin:SplitElementsIntoViews()
 end
 
 --[[
- * Répartit les éléments en vues pour le mode grille
+ * Split elements into views for grid mode
  *
- * @return table Liste des vues avec leurs éléments en grille
+ * @return table List of views with elements in grid
 ]]
 function PagedContentFrameMixin:SplitElementsIntoGrid()
     local views = {}
@@ -278,34 +278,34 @@ function PagedContentFrameMixin:SplitElementsIntoGrid()
 
     for _, group in ipairs(self.dataProvider) do
         if group.header then
-            -- Si la vue est pleine, en créer une nouvelle
+            -- If view is full, create a new one
             if currentHeight + headerHeight > viewHeight or #currentView >= maxItemsPerView then
                 table.insert(views, currentView)
                 currentView = {}
                 currentHeight = 0
             end
 
-            -- Ajouter le header
+            -- Add header
             group.header._isHeader = true
             table.insert(currentView, group.header)
             currentHeight = currentHeight + headerHeight
         end
 
-        -- Traiter les éléments par rangées pour le mode grille
+        -- Process elements by rows for grid mode
         local elementsCount = #(group.elements or {})
         local currentPos = 0
 
         while currentPos < elementsCount do
             local remainingInRow = math.min(itemsPerRow, elementsCount - currentPos)
 
-            -- Vérifier si on a besoin d'une nouvelle vue
+            -- Check if we need a new view
             if currentHeight + itemHeight > viewHeight or #currentView + remainingInRow > maxItemsPerView then
                 table.insert(views, currentView)
                 currentView = {}
                 currentHeight = 0
             end
 
-            -- Ajouter les éléments de cette rangée
+            -- Add elements in this row
             for i = 1, remainingInRow do
                 local element = group.elements[currentPos + i]
                 element._gridPosition = i
@@ -318,7 +318,7 @@ function PagedContentFrameMixin:SplitElementsIntoGrid()
         end
     end
 
-    -- Ajouter la dernière vue si non vide
+    -- Add last view if not empty
     if #currentView > 0 then
         table.insert(views, currentView)
     end
@@ -327,23 +327,23 @@ function PagedContentFrameMixin:SplitElementsIntoGrid()
 end
 
 --[[
- * Change de page avec animation de fondu
+ * Change page with fade animation
  *
- * @param pageNum number Numéro de la page cible
+ * @param pageNum number Target page number
  * @return void
 ]]
 function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
-    -- Valider la page demandée
+    -- Validate requested page
     pageNum = math.max(1, math.min(pageNum, self.maxPages))
 
-    -- Ne rien faire si on est déjà sur cette page
+    -- Do nothing if already on this page
     if self.currentPage == pageNum then
         return
     end
 
-    -- Arrêter toute animation en cours
+    -- Stop any ongoing animation
     if self.isAnimating then
-        -- Arrêter les frames d'animation existantes
+        -- Stop existing animation frames
         if self.fadeInFrame then
             self.fadeInFrame:SetScript("OnUpdate", nil)
             self.fadeInFrame = nil
@@ -354,16 +354,16 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
             self.fadeOutFrame = nil
         end
 
-        -- Restaurer l'alpha de tous les viewFrames à 1
+        -- Restore alpha of all viewFrames to 1
         for _, viewFrame in ipairs(self.ViewFrames) do
             viewFrame:SetAlpha(1)
         end
     end
 
-    -- Marquer comme animation en cours
+    -- Mark as animating
     self.isAnimating = true
 
-    -- Désactiver les boutons de pagination pendant l'animation
+    -- Disable pagination buttons during animation
     if self.PagingButtons then
         if self.PagingButtons.Prev then
             self.PagingButtons.Prev:Disable()
@@ -373,20 +373,20 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
         end
     end
 
-    -- Préparer les frames à animer
+    -- Prepare frames to animate
     local viewFrames = {}
     for _, viewFrame in ipairs(self.ViewFrames) do
         table.insert(viewFrames, viewFrame)
     end
 
-    -- Enregistrer une référence au conteneur
+    -- Store reference to container
     local container = self
     local targetPage = pageNum
 
-    -- Fonction pour réactiver les boutons à la fin de l'animation
+    -- Function to reactivate buttons at end of animation
     local function reactivateButtons()
         if container.PagingButtons then
-            -- Réactiver en fonction de la nouvelle page
+            -- Reactivate based on new page
             if container.currentPage <= 1 then
                 container.PagingButtons.Prev:Disable()
             else
@@ -400,16 +400,16 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
             end
         end
 
-        -- Marquer l'animation comme terminée
+        -- Mark animation as finished
         container.isAnimating = false
     end
 
-    -- Fonction de fade-in
+    -- Fade-in function
     local function startFadeIn()
         local startTime = GetTime()
         local duration = 0.2
 
-        -- Arrêter l'ancien frame fadeIn s'il existe
+        -- Stop old fadeIn frame if it exists
         if container.fadeInFrame then
             container.fadeInFrame:SetScript("OnUpdate", nil)
         end
@@ -419,21 +419,21 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
             local progress = (GetTime() - startTime) / duration
 
             if progress >= 1 then
-                -- Une fois le fade-in terminé, rétablir l'alpha à 1
+                -- Once fade-in is complete, restore alpha to 1
                 for _, viewFrame in ipairs(viewFrames) do
                     viewFrame:SetAlpha(1)
                 end
 
-                -- Réactiver les boutons
+                -- Reactivate buttons
                 reactivateButtons()
 
-                -- Nettoyer
+                -- Clean up
                 container.fadeInFrame = nil
 
-                -- Arrêter cette animation
+                -- Stop this animation
                 self:SetScript("OnUpdate", nil)
             else
-                -- Mettre à jour l'alpha pendant le fade-in
+                -- Update alpha during fade-in
                 local alpha = progress
                 for _, viewFrame in ipairs(viewFrames) do
                     viewFrame:SetAlpha(alpha)
@@ -442,8 +442,8 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
         end)
     end
 
-    -- Fonction de fade-out
-    -- Arrêter l'ancien frame fadeOut s'il existe
+    -- Fade-out function
+    -- Stop old fadeOut frame if it exists
     if self.fadeOutFrame then
         self.fadeOutFrame:SetScript("OnUpdate", nil)
     end
@@ -457,25 +457,25 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
             local progress = (GetTime() - startTime) / duration
 
             if progress >= 1 then
-                -- Une fois le fade-out terminé, changer la page et lancer le fade-in
+                -- Once fade-out is complete, change page and start fade-in
                 for _, viewFrame in ipairs(viewFrames) do
                     viewFrame:SetAlpha(0)
                 end
 
-                -- IMPORTANT: changer la page actuelle
+                -- IMPORTANT: change current page
                 container.currentPage = targetPage
                 container:DisplayCurrentPage()
 
-                -- Nettoyer
+                -- Clean up
                 container.fadeOutFrame = nil
 
-                -- Lancer le fade-in
+                -- Start fade-in
                 startFadeIn()
 
-                -- Arrêter cette animation
+                -- Stop this animation
                 self:SetScript("OnUpdate", nil)
             else
-                -- Mettre à jour l'alpha pendant le fade-out
+                -- Update alpha during fade-out
                 local alpha = 1 - progress
                 for _, viewFrame in ipairs(viewFrames) do
                     viewFrame:SetAlpha(alpha)
@@ -486,16 +486,16 @@ function PagedContentFrameMixin:SetCurrentPageWithFade(pageNum)
 end
 
 --[[
- * Change le provider de données avec animation de fondu
+ * Change data provider with fade animation
  *
- * @param dataProvider table Nouvelles données à afficher
+ * @param dataProvider table New data to display
  * @return void
 ]]
 function PagedContentFrameMixin:SetDataProviderWithFade(dataProvider)
-    -- Protection contre les animations multiples trop rapprochées
+    -- Protection against multiple animations too close together
     local currentTime = GetTime()
     if self.lastFadeTime and (currentTime - self.lastFadeTime) < self.config.throttleTime then
-        -- Mettre à jour directement sans animation
+        -- Update directly without animation
         self:SetDataProvider(dataProvider, true)
         return
     end
@@ -507,18 +507,18 @@ function PagedContentFrameMixin:SetDataProviderWithFade(dataProvider)
         self.isAnimating = false
     end
 
-    -- Valider le dataProvider
+    -- Validate dataProvider
     if not dataProvider then return end
 
-    -- Si vide et qu'un fallback est défini, utiliser le fallback
+    -- If empty and a fallback is defined, use the fallback
     if #dataProvider == 0 and self.emptyDataProviderFallback then
         dataProvider = self.emptyDataProviderFallback()
     end
 
-    -- Marquer le début de l'animation
+    -- Mark beginning of animation
     self.isAnimating = true
 
-    -- Désactiver les boutons de pagination pendant l'animation
+    -- Disable pagination buttons during animation
     if self.PagingButtons then
         if self.PagingButtons.Prev then
             self.PagingButtons.Prev:Disable()
@@ -528,107 +528,107 @@ function PagedContentFrameMixin:SetDataProviderWithFade(dataProvider)
         end
     end
 
-    -- Créer un frame d'animation si nécessaire
+    -- Create animation frame if needed
     if not self.fadeAnimationFrame then
         self.fadeAnimationFrame = CreateFrame("Frame")
     end
 
-    -- Variables pour l'animation
+    -- Variables for animation
     local fadeOutDuration = self.config.fadeOutDuration
     local fadeInDuration = self.config.fadeInDuration
     local animationDelay = self.config.animationDelay
     local startTime = GetTime()
     local currentViewFrames = {}
 
-    -- Copier les frames à animer
+    -- Copy frames to animate
     for _, viewFrame in ipairs(self.ViewFrames) do
         table.insert(currentViewFrames, viewFrame)
     end
 
-    -- Stocker une référence à l'objet courant
+    -- Store reference to current object
     local currentContainer = self
     local newData = dataProvider
 
-    -- Marquer le temps de la dernière animation
+    -- Mark time of last animation
     self.lastFadeTime = currentTime
 
-    -- Animation de fondu
+    -- Fade animation
     local function FadeAnimation(animFrame, elapsed)
         local currentTime = GetTime()
         local elapsedTime = currentTime - startTime
 
-        -- Phase de Fade Out
+        -- Fade Out Phase
         if elapsedTime < fadeOutDuration then
             local alpha = 1 - (elapsedTime / fadeOutDuration)
             for _, viewFrame in ipairs(currentViewFrames) do
                 viewFrame:SetAlpha(alpha)
             end
 
-            -- Petit délai
+            -- Small delay
         elseif elapsedTime >= fadeOutDuration and elapsedTime < (fadeOutDuration + animationDelay) then
-            -- Attendre
+            -- Wait
 
-            -- Changement de contenu
+            -- Content change
         elseif elapsedTime >= (fadeOutDuration + animationDelay) and
                 elapsedTime <= (fadeOutDuration + animationDelay + 0.01) then
-            -- Changer le contenu explicitement
+            -- Explicitly change content
             currentContainer:SetDataProvider(newData, true)
 
-            -- Phase de Fade In
+            -- Fade In Phase
         elseif elapsedTime < (fadeOutDuration + animationDelay + fadeInDuration) then
             local fadeInProgress = (elapsedTime - (fadeOutDuration + animationDelay)) / fadeInDuration
             for _, viewFrame in ipairs(currentViewFrames) do
                 viewFrame:SetAlpha(fadeInProgress)
             end
 
-            -- Fin de l'animation
+            -- End of animation
         else
             for _, viewFrame in ipairs(currentViewFrames) do
                 viewFrame:SetAlpha(1)
             end
             animFrame:SetScript("OnUpdate", nil)
 
-            -- Marquer la fin de l'animation
+            -- Mark end of animation
             currentContainer.isAnimating = false
 
-            -- Réactiver les boutons de pagination selon la position actuelle
+            -- Reactivate pagination buttons based on current position
             currentContainer:UpdatePagingButtons()
         end
     end
 
-    -- Démarrer l'animation
+    -- Start animation
     self.fadeAnimationFrame:SetScript("OnUpdate", FadeAnimation)
 end
 
 
--- Amélioration de UpdatePagingButtons
+-- Improved UpdatePagingButtons
 function PagedContentFrameMixin:UpdatePagingButtons()
     if not self.PagingButtons then return end
 
-    -- Désactiver le bouton précédent sur la première page
+    -- Disable previous button on first page
     if self.currentPage <= 1 then
         self.PagingButtons.Prev:Disable()
     else
         self.PagingButtons.Prev:Enable()
     end
 
-    -- Désactiver le bouton suivant sur la dernière page
+    -- Disable next button on last page
     if self.currentPage >= self.maxPages then
         self.PagingButtons.Next:Disable()
     else
         self.PagingButtons.Next:Enable()
     end
 
-    -- Mettre à jour le texte de la page si disponible
+    -- Update page text if available
     if self.PagingButtons.Text then
         self.PagingButtons.Text:SetText(string.format("Page %d / %d", self.currentPage, self.maxPages))
     end
 end
 
 --[[
- * Définit une fonction de fallback pour les données vides
+ * Set a fallback function for empty data
  *
- * @param fallbackFunc function Fonction qui retourne un dataProvider de remplacement
+ * @param fallbackFunc function Function that returns a replacement dataProvider
  * @return void
 ]]
 function PagedContentFrameMixin:SetEmptyDataProviderFallback(fallbackFunc)
@@ -636,28 +636,28 @@ function PagedContentFrameMixin:SetEmptyDataProviderFallback(fallbackFunc)
 end
 
 --[[
- * Affiche les éléments pour la page courante
- * Cette méthode utilise le renderer approprié selon le mode de rendu
+ * Display elements for current page
+ * This method uses the appropriate renderer based on render mode
  *
  * @return void
 ]]
 function PagedContentFrameMixin:DisplayCurrentPage()
-    -- Trace de débogage
+    -- Debug trace
     if self.debug then
-        print(string.format("Affichage de la page %d sur %d", self.currentPage, self.maxPages))
+        print(string.format("Displaying page %d of %d", self.currentPage, self.maxPages))
     end
 
-    -- Libérer les pools
+    -- Release pools
     self:ReleaseAllPools()
 
-    -- Vérifier la validité des données
+    -- Verify data validity
     if not self.viewDataList or #self.viewDataList == 0 then
         return
     end
 
-    -- Effectuer le rendu selon le mode configuré
+    -- Render based on configured mode
     if self.renderMode == PagedContent.RenderMode.CUSTOM and self.customRenderer then
-        -- Rendu personnalisé
+        -- Custom render
         for viewIndex = 1, self.viewsPerPage do
             local viewDataIndex = ((self.currentPage - 1) * self.viewsPerPage) + viewIndex
             local viewData = self.viewDataList[viewDataIndex]
@@ -668,42 +668,42 @@ function PagedContentFrameMixin:DisplayCurrentPage()
             end
         end
     elseif self.renderMode == PagedContent.RenderMode.GRID then
-        -- Rendu en grille
+        -- Grid render
         self:RenderGridLayout()
     else
-        -- Rendu en liste
+        -- List render
         self:RenderListLayout()
     end
 
-    -- Mettre à jour les boutons de pagination
+    -- Update pagination buttons
     self:UpdatePagingButtons()
 
-    -- IMPORTANT: Forcer la mise à jour du texte de pagination
+    -- IMPORTANT: Force pagination text update
     self:UpdatePageText()
 
-    -- Déclencher l'événement de changement de page
+    -- Trigger page change event
     self:TriggerCallback("OnPageChanged")
 end
 
--- Ajoute une méthode dédiée pour mettre à jour le texte de pagination
+-- Add dedicated method to update pagination text
 function PagedContentFrameMixin:UpdatePageText()
-    -- Si un texte de pagination existe
+    -- If pagination text exists
     if self.PageText then
         self.PageText:SetText(string.format("Page %d / %d", self.currentPage, self.maxPages))
 
-        -- Si le texte est dans les boutons de pagination
+        -- If text is in pagination buttons
     elseif self.PagingButtons and self.PagingButtons.Text then
         self.PagingButtons.Text:SetText(string.format("Page %d / %d", self.currentPage, self.maxPages))
     end
 
-    -- Trace de débogage
+    -- Debug trace
     if self.debug then
-        print(string.format("Texte de pagination mis à jour: Page %d / %d", self.currentPage, self.maxPages))
+        print(string.format("Pagination text updated: Page %d / %d", self.currentPage, self.maxPages))
     end
 end
 
 --[[
- * Rend les éléments en mode liste
+ * Render elements in list mode
  *
  * @return void
 ]]
@@ -721,7 +721,7 @@ function PagedContentFrameMixin:RenderListLayout()
                 local templateInfo = self.elementTemplateData[templateKey]
 
                 if not templateInfo then
-                    error(string.format("Template non trouvé pour la clé: %s", templateKey))
+                    error(string.format("Template not found for key: %s", templateKey))
                 end
 
                 local pool = self:GetOrCreatePool(templateInfo.template)
@@ -729,7 +729,7 @@ function PagedContentFrameMixin:RenderListLayout()
                 frame:SetParent(viewFrame)
                 frame:ClearAllPoints()
 
-                -- Positionner et initialiser l'élément
+                -- Position and initialize element
                 frame:SetPoint("TOPLEFT", viewFrame, "TOPLEFT", 0, -yOffset)
                 frame:SetPoint("RIGHT", viewFrame, "RIGHT", 0, 0)
 
@@ -739,7 +739,7 @@ function PagedContentFrameMixin:RenderListLayout()
 
                 frame:Show()
 
-                -- Mise à jour de la position verticale
+                -- Update vertical position
                 if templateKey == "Header" or elementData._isHeader then
                     yOffset = yOffset + self.config.headerHeight + self.config.headerBottomMargin
                 else
@@ -751,7 +751,7 @@ function PagedContentFrameMixin:RenderListLayout()
 end
 
 --[[
- * Rend les éléments en mode grille
+ * Render elements in grid mode
  *
  * @return void
 ]]
@@ -770,7 +770,7 @@ function PagedContentFrameMixin:RenderGridLayout()
                 local templateInfo = self.elementTemplateData[templateKey]
 
                 if not templateInfo then
-                    error(string.format("Template non trouvé pour la clé: %s", templateKey))
+                    error(string.format("Template not found for key: %s", templateKey))
                 end
 
                 local pool = self:GetOrCreatePool(templateInfo.template)
@@ -778,15 +778,15 @@ function PagedContentFrameMixin:RenderGridLayout()
                 frame:SetParent(viewFrame)
                 frame:ClearAllPoints()
 
-                -- Si c'est un header ou marqué comme tel
+                -- If it's a header or marked as such
                 if templateKey == "Header" or elementData._isHeader then
-                    -- Si on était en train de remplir une ligne
+                    -- If we were filling a row
                     if currentColumn > 0 then
                         yOffset = yOffset + self.config.rowHeight + self.config.rowSpacing
                         currentColumn = 0
                     end
 
-                    -- Ajouter de l'espace avant le header
+                    -- Add space before header
                     yOffset = yOffset + self.config.headerTopMargin
 
                     frame:SetPoint("TOPLEFT", viewFrame, "TOPLEFT", 0, -yOffset)
@@ -799,7 +799,7 @@ function PagedContentFrameMixin:RenderGridLayout()
                     frame:Show()
                     yOffset = yOffset + self.config.headerHeight + self.config.headerBottomMargin
                 else
-                    -- Pour un élément normal, utiliser la mise en page en grille
+                    -- For normal element, use grid layout
                     local xOffset = currentColumn * (self.config.columnWidth + self.config.columnSpacing)
                     frame:SetPoint("TOPLEFT", viewFrame, "TOPLEFT", xOffset, -yOffset)
                     frame:SetWidth(self.config.columnWidth)
@@ -810,7 +810,7 @@ function PagedContentFrameMixin:RenderGridLayout()
 
                     frame:Show()
 
-                    -- Gestion des colonnes et lignes
+                    -- Column and row management
                     currentColumn = currentColumn + 1
                     if currentColumn >= self.config.maxColumnsPerRow or
                             (elementData._gridPosition and elementData._gridPosition == elementData._gridSize) then
@@ -820,7 +820,7 @@ function PagedContentFrameMixin:RenderGridLayout()
                 end
             end
 
-            -- S'assurer que la dernière ligne est complètement affichée
+            -- Ensure last row is fully displayed
             if currentColumn > 0 then
                 yOffset = yOffset + self.config.rowHeight + self.config.rowSpacing
             end
@@ -829,38 +829,38 @@ function PagedContentFrameMixin:RenderGridLayout()
 end
 
 --[[
- * Met à jour l'état des boutons de pagination
+ * Update pagination button state
  *
  * @return void
 ]]
 function PagedContentFrameMixin:UpdatePagingButtons()
     if not self.PagingButtons then return end
 
-    -- Gérer le bouton Précédent
+    -- Handle Previous button
     if self.currentPage <= 1 then
         self.PagingButtons.Prev:Disable()
     else
         self.PagingButtons.Prev:Enable()
     end
 
-    -- Gérer le bouton Suivant
+    -- Handle Next button
     if self.currentPage >= self.maxPages then
         self.PagingButtons.Next:Disable()
     else
         self.PagingButtons.Next:Enable()
     end
 
-    -- Mettre à jour le texte de pagination (si présent dans les boutons)
+    -- Update pagination text (if present in buttons)
     if self.PagingButtons.Text then
         self.PagingButtons.Text:SetText(string.format("Page %d / %d", self.currentPage, self.maxPages))
     end
 end
 
 --[[
- * Obtient ou crée un pool de frames pour un template donné
+ * Get or create a frame pool for given template
  *
- * @param template string Nom du template
- * @return table Pool de frames
+ * @param template string Template name
+ * @return table Frame pool
 ]]
 function PagedContentFrameMixin:GetOrCreatePool(template)
     if not self.pools[template] then
@@ -870,7 +870,7 @@ function PagedContentFrameMixin:GetOrCreatePool(template)
 end
 
 --[[
- * Libère tous les pools de frames
+ * Release all frame pools
  *
  * @return void
 ]]
@@ -881,21 +881,21 @@ function PagedContentFrameMixin:ReleaseAllPools()
 end
 
 --[[
- * Change la page courante sans animation
+ * Change current page without animation
  *
- * @param pageNum number Numéro de la page cible
+ * @param pageNum number Target page number
  * @return void
 ]]
 function PagedContentFrameMixin:SetCurrentPage(pageNum)
-    -- Valider la page demandée
+    -- Validate requested page
     pageNum = math.max(1, math.min(pageNum, self.maxPages))
 
-    -- Mettre à jour la page actuelle et l'affichage
+    -- Update current page and display
     if self.currentPage ~= pageNum then
         self.currentPage = pageNum
         self:DisplayCurrentPage()
 
-        -- Mettre à jour les boutons de pagination
+        -- Update pagination buttons
         if self.PagingButtons then
             if self.currentPage <= 1 then
                 self.PagingButtons.Prev:Disable()
@@ -910,12 +910,12 @@ function PagedContentFrameMixin:SetCurrentPage(pageNum)
             end
         end
 
-        -- Mettre à jour le texte de pagination
+        -- Update pagination text
         if self.PageText then
             self.PageText:SetText(string.format("Page %d / %d", self.currentPage, self.maxPages))
         end
 
-        -- Déclencher l'événement de changement de page
+        -- Trigger page change event
         self:TriggerCallback("OnPageChanged")
 
         return true
@@ -925,26 +925,36 @@ function PagedContentFrameMixin:SetCurrentPage(pageNum)
 end
 
 --[[
- * Crée les contrôles de pagination de base
+ * Create basic pagination controls
  *
  * @return void
 ]]
 function PagedContentFrameMixin:CreatePagingControls()
-    -- Création des boutons de navigation
+    -- Create navigation buttons
     local prev = CreateFrame("Button", nil, self)
-    prev:SetSize(32, 32)
-    prev:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", 10, 10)
+    prev:SetSize(32, 590)
+    prev:SetPoint("LEFT", self, "LEFT", -2, -25)
+    prev:SetFrameStrata("TOOLTIP")
+
     prev:SetScript("OnClick", function()
-        if self.SetCurrentPageWithFade then
-            self:SetCurrentPageWithFade(self.currentPage - 1)
-        else
-            self:SetCurrentPage(self.currentPage - 1)
+        local currentPage = self.currentPage
+        if currentPage > 1 then
+            self:SetCurrentPageWithFade(currentPage - 1)
         end
     end)
 
     local next = CreateFrame("Button", nil, self)
-    next:SetSize(32, 32)
-    next:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -10, 10)
+    next:SetSize(32, 590)
+    next:SetPoint("RIGHT", self, "RIGHT", -2, -25)
+
+    next:SetScript("OnEnter", function()
+        SpellBookCorner_OnEnter(PlayerSpellsFrame.BookCornerFlipbook)
+    end)
+
+    next:SetScript("OnLeave", function()
+        SpellBookCorner_OnLeave(PlayerSpellsFrame.BookCornerFlipbook)
+    end)
+
     next:SetScript("OnClick", function()
         if self.SetCurrentPageWithFade then
             self:SetCurrentPageWithFade(self.currentPage + 1)
@@ -960,10 +970,10 @@ function PagedContentFrameMixin:CreatePagingControls()
 end
 
 --[[
- * Enregistre une fonction de callback pour un événement
+ * Register callback function for an event
  *
- * @param event string Nom de l'événement
- * @param callback function Fonction de callback
+ * @param event string Event name
+ * @param callback function Callback function
  * @return void
 ]]
 function PagedContentFrameMixin:RegisterCallback(event, callback)
@@ -971,10 +981,10 @@ function PagedContentFrameMixin:RegisterCallback(event, callback)
 end
 
 --[[
- * Déclenche un callback pour un événement
+ * Trigger callback for an event
  *
- * @param event string Nom de l'événement
- * @param ... any Arguments supplémentaires à passer au callback
+ * @param event string Event name
+ * @param ... any Additional arguments to pass to callback
  * @return void
 ]]
 function PagedContentFrameMixin:TriggerCallback(event, ...)
@@ -984,9 +994,9 @@ function PagedContentFrameMixin:TriggerCallback(event, ...)
 end
 
 --[[
- * Configure les paramètres de rendu
+ * Configure render parameters
  *
- * @param config table Configuration à appliquer
+ * @param config table Configuration to apply
  * @return void
 ]]
 function PagedContentFrameMixin:Configure(config)
@@ -996,14 +1006,19 @@ function PagedContentFrameMixin:Configure(config)
         self.config[k] = v
     end
 
-    -- Mettre à jour si nécessaire
+    -- Update if needed
     if self.dataProvider then
         self:UpdateElementDistribution()
         self:DisplayCurrentPage()
     end
 end
 
--- Active le mode debug pour faciliter le dépannage
+--[[
+ * Enable debug mode to facilitate troubleshooting
+ *
+ * @param enable boolean Whether to enable debug mode
+ * @return void
+]]
 function PagedContentFrameMixin:EnableDebug(enable)
     self.debug = enable or false
 end

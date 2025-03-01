@@ -85,7 +85,7 @@ function SpellBook_SpellFilter:FilterSpellsBySearch(searchText, allRanksMode)
                 -- Avoid duplicates
                 if not addedSpells[spellName] then
                     table.insert(tabSpells.elements, {
-                        templateKey = "Spell",
+                        templateKey = "Sort",
                         spellIndex = spell,
                         bookType = BOOKTYPE_SPELL
                     })
@@ -148,7 +148,7 @@ function SpellBook_SpellFilter:FilterAllSpells()
                 local uniqueKey = spellName .. (showAllRanks and spellRank or "")
                 if shouldAddSpell and not addedSpells[uniqueKey] then
                     table.insert(tabSpells.elements, {
-                        templateKey = "Spell",
+                        templateKey = "Sort",
                         spellIndex = spell,
                         bookType = BOOKTYPE_SPELL
                     })
