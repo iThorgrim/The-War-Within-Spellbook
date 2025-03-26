@@ -89,7 +89,6 @@
         </Layers>
 
         <Frames>
-            <!-- Conteneur pour l'icône façon portrait -->
             <Frame parentKey="PortraitFrame">
                 <Size x="32" y="32"/>
                 <Anchors>
@@ -97,7 +96,6 @@
                 </Anchors>
                 
                 <Layers>
-                    <!-- Portrait (icône du sort) -->
                     <Layer level="BORDER">
                         <Texture parentKey="Portrait" file="Interface/Icons/INV_Misc_QuestionMark">
                             <Size x="24" y="24"/>
@@ -107,7 +105,6 @@
                         </Texture>
                     </Layer>
                     
-                    <!-- Bord du portrait -->
                     <Layer level="ARTWORK">
                         <Texture parentKey="ActiveBorder" file="Interface/SpellBook/SpellbookElements" alpha="1" hidden="true">
                             <Size x="39" y="37.5"/>
@@ -134,7 +131,6 @@
                         </Texture>
                     </Layer>
                     
-                    <!-- Couche pour les effets visuels -->
                     <Layer level="OVERLAY">
                         <Texture parentKey="Highlight" hidden="true" alphaMode="ADD">
                             <Anchors>
@@ -145,7 +141,6 @@
                 </Layers>
             </Frame>
             
-            <!-- Conteneur pour le texte -->
             <Frame parentKey="TextContainer">
                 <Size x="100" y="30"/>
                 <Anchors>
@@ -175,7 +170,7 @@
             <!-- Cooldown -->
             <Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" hidden="true">
                 <Anchors>
-                    <Anchor point="CENTER" relativeKey="$parent.PortraitFrame" relativePoint="CENTER"/>
+                    <Anchor point="CENTER" relativeTo="$parent.PortraitFrame" relativePoint="CENTER"/>
                 </Anchors>
                 <Size x="24" y="24"/>
             </Cooldown>
@@ -183,7 +178,6 @@
 
         <Scripts>
             <OnLoad>
-                -- Compatibilité avec le code existant
                 self.icon = self.PortraitFrame.Portrait
             </OnLoad>
         </Scripts>
@@ -315,10 +309,10 @@
                             </Button>
 
                             <Frame name="$parentPageText" parentKey="PageText">
-                                <Size x="60" y="30"/>
+                                <Size x="80" y="60"/>
 
                                 <Anchors>
-                                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-190" y="2"/>
+                                    <Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT" x="-190" y="-13"/>
                                 </Anchors>
 
                                 <Layers>
@@ -341,12 +335,14 @@
 
         <Scripts>
             <OnLoad>
-                SpellBookFrame_OnLoad(self);
                 PlayerSpellsFrame_OnLoad(self);
             </OnLoad>
             <OnShow>
                 PlayerSpellsFrame_OnShow(self);
             </OnShow>
+            <OnHide>
+                PlayerSpellsFrame_OnHide(self);
+            </OnHide>
         </Scripts>
     </Frame>
 </Ui>
