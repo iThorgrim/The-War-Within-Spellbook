@@ -1,20 +1,18 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ../FrameXML/UI.xsd">
 
     <Script>
-    -- Fonction utilitaire pour définir le portrait
-    function SetFramePortrait(frame, texture)
-        if not frame or not frame.PortraitFrame or not frame.PortraitFrame.Portrait then 
-            return 
-        end
-        
-        SetPortraitToTexture(frame.PortraitFrame.Portrait, texture)
-    end
+        function SetFramePortrait(frame, texture)
+            if not frame or not frame.PortraitFrame or not frame.PortraitFrame.Portrait then
+                return
+            end
 
-    -- Fonction utilitaire pour définir le titre
-    function SetFrameTitle(frame, title)
-        if not frame or not frame.TitleText then return end
-        frame.TitleText:SetText(title)
-    end
+            SetPortraitToTexture(frame.PortraitFrame.Portrait, texture)
+        end
+
+        function SetFrameTitle(frame, title)
+            if not frame or not frame.TitleText then return end
+            frame.TitleText:SetText(title)
+        end
     </Script>
 
     <Font name="SystemFont_Large" font="Fonts\FRIZQT__.TTF" virtual="true">
@@ -27,7 +25,6 @@
         <Color r="0" g="0" b="0" a=".5"/>
     </Font>
 
-    <!-- Frame de base avec cadre métallique -->
     <Frame name="MetalFrame2X" enableMouse="true" virtual="true" movable="true" resizable="true">
         <Size x="300" y="300"/>
 
@@ -50,7 +47,6 @@
 
         <Layers>
             <Layer level="ARTWORK">
-                <!-- Titre centralisé en haut -->
                 <FontString name="$parentTitleText" parentKey="TitleText" inherits="GameFontNormal">
                     <Anchors>
                         <Anchor point="TOP" x="0" y="-18"/>
@@ -60,7 +56,6 @@
         </Layers>
 
         <Frames>
-            <!-- Cadre métallique -->
             <Frame name="$parentMetalBorder" parentKey="MetalBorder" frameLevel="10">
                 <Anchors>
                     <Anchor point="TOPLEFT" x="-15" y="30"/>
@@ -175,10 +170,8 @@
     <Frame name="PortraitFrame2X" inherits="MetalFrame2X" virtual="true">       
         <Scripts>
             <OnLoad>
-                -- Appeler le script du parent
                 getmetatable(self).__index.OnLoad(self);
                 
-                -- Initialiser le portrait par défaut
                 if self.PortraitFrame and self.PortraitFrame.Portrait then
                     SetPortraitToTexture(self.PortraitFrame.Portrait, "Interface\\Icons\\INV_Misc_QuestionMark");
                 end
