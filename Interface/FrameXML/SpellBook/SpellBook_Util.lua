@@ -135,7 +135,7 @@ function SpellBook_Util:GetSpellRequiredLevel(spellIndex, bookType)
                 end
 
                 -- English version
-                level = text:match("Requires Level (%d+)")
+                level = text:match("Level (%d+)")
                 if level then
                     return tonumber(level)
                 end
