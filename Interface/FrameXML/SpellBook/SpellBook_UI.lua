@@ -42,7 +42,7 @@ local UIFactory = {
     CreateRankFilterCheckbox = function(parent)
         local checkbox = CreateFrame("CheckButton", nil, parent, "UICheckButtonTemplate")
         checkbox:SetSize(24, 24)
-        checkbox:SetPoint("BOTTOMLEFT", parent.PageView1, "TOPLEFT", 0, 5)
+        checkbox:SetPoint("BOTTOMRIGHT", parent.PageView2, "TOPRIGHT", -150, 40)
 
         local text = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         text:SetPoint("LEFT", checkbox, "RIGHT", 0, 0)
@@ -56,7 +56,7 @@ local UIFactory = {
     CreateSearchBox = function(parent, relativeTo)
         local searchBox = CreateFrame("EditBox", nil, parent, "InputBoxTemplate")
         searchBox:SetSize(150, 20)
-        searchBox:SetPoint("BOTTOMLEFT", relativeTo, "TOPLEFT", 0, 5)
+        searchBox:SetPoint("BOTTOMRIGHT", relativeTo, "TOPRIGHT", -30, -21)
         searchBox:SetAutoFocus(false)
 
         return searchBox
@@ -450,10 +450,9 @@ end
 --[[
     Handler for player spells frame showing
     
-    @param {table} frame The main player spells frame
     @return void
 ]]--
-function PlayerSpellsFrame_OnShow(frame)
+function PlayerSpellsFrame_OnShow()
     if MultiActionBar_ShowAllGrids then
         MultiActionBar_ShowAllGrids()
     end
@@ -463,6 +462,26 @@ function PlayerSpellsFrame_OnShow(frame)
     end
 
     PlaySound("igSpellBookOpen")
+
+    SpellBook_UI:UpdateSpellBookContent()
+    SpellBook_UI:UpdateCooldowns()
+end
+
+--[[
+    Handler for player spells frame hinding
+
+    @return void
+]]--
+function PlayerSpellsFrame_OnHide()
+    if MultiActionBar_HideAllGrids then
+        MultiActionBar_HideAllGrids()
+    end
+
+    if UpdateMicroButtons then
+        UpdateMicroButtons()
+    end
+
+    PlaySound("igSpellBookClose");
 
     SpellBook_UI:UpdateSpellBookContent()
     SpellBook_UI:UpdateCooldowns()
