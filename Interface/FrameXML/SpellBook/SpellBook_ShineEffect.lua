@@ -95,10 +95,10 @@ function SpellBook_ShineEffect:CreateSparkleEffect(button)
     local border = container:CreateTexture(nil, "OVERLAY")
     border:SetTexture(self.textures.border)
     border:SetTexCoord(0.000976562, 0.125, 0.661133, 0.785156)
-    border:SetPoint("CENTER", container, "CENTER", 0, 0)
+    border:SetPoint("CENTER", container, "CENTER", 0.5, 0.5)
     border:SetBlendMode("ADD")
-    border:SetWidth(32)
-    border:SetHeight(32)
+    border:SetWidth(39)
+    border:SetHeight(39)
     
     -- Create sparkles
     local sparkles = {}

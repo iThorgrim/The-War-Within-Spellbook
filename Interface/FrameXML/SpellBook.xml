@@ -98,16 +98,16 @@
                 <Layers>
                     <Layer level="BORDER">
                         <Texture parentKey="Portrait" file="Interface/Icons/INV_Misc_QuestionMark">
-                            <Size x="24" y="24"/>
+                            <Size x="32" y="32"/>
                             <Anchors>
-                                <Anchor point="CENTER"/>
+                                <Anchor point="CENTER" x="0" y="0"/>
                             </Anchors>
                         </Texture>
                     </Layer>
                     
                     <Layer level="ARTWORK">
                         <Texture parentKey="ActiveBorder" file="Interface/SpellBook/SpellbookElements" alpha="1" hidden="true">
-                            <Size x="39" y="37.5"/>
+                            <Size x="46" y="44.5"/>
                             <Anchors>
                                 <Anchor point="CENTER" x="-3.3" y="-2"/>
                             </Anchors>
@@ -115,7 +115,7 @@
                         </Texture>
 
                         <Texture parentKey="PassiveBorder" file="Interface/SpellBook/SpellbookElements" alpha="1" hidden="true">
-                            <Size x="39" y="37.5"/>
+                            <Size x="46" y="44.5"/>
                             <Anchors>
                                 <Anchor point="CENTER" x="-3.3" y="-2"/>
                             </Anchors>
@@ -123,7 +123,7 @@
                         </Texture>
 
                         <Texture parentKey="ActiveHoverBorder" file="Interface/SpellBook/SpellbookElements" alpha="0.5" hidden="true">
-                            <Size x="39" y="37.5"/>
+                            <Size x="46" y="44.5"/>
                             <Anchors>
                                 <Anchor point="CENTER" x="-3.3" y="-2"/>
                             </Anchors>
@@ -144,7 +144,7 @@
             <Frame parentKey="TextContainer">
                 <Size x="100" y="30"/>
                 <Anchors>
-                    <Anchor point="LEFT" x="40" y="-2.5"/>
+                    <Anchor point="LEFT" x="45" y="-2.5"/>
                 </Anchors>
 
                 <Layers>
