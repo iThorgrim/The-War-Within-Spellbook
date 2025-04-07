@@ -367,17 +367,8 @@ function SpellBook_UI:UpdateSpellBookContent()
         spellData = SpellBook_SpellFilter:FilterAllSpells()
     end
 
-    if spellBookFrame.SetDataProviderWithFade then
-        spellBookFrame:SetDataProviderWithFade(spellData)
-    else
-        spellBookFrame:SetDataProvider(spellData)
-    end
-
-    if SpellBook_ShineEffect then
-        C_Timer.After(.35, function() 
-            SpellBook_ShineEffect:ApplyShineToUnusedSpells()
-        end)
-    end
+    spellBookFrame:SetDataProvider(spellData, true)
+    SpellBook_ShineEffect:ApplyShineToUnusedSpells()
 end
 
 --[[
