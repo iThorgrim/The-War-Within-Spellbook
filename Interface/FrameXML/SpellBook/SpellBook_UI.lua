@@ -436,6 +436,7 @@ function PlayerSpellsFrame_OnLoad(frame)
     end
 
     SetFramePortrait(frame, "Interface\\Icons\\INV_Misc_Book_09")
+    tinsert(UISpecialFrames, frame:GetName())
 end
 
 --[[
