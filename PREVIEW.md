@@ -41,10 +41,12 @@
 
 ### 🎨 **Visual Polish**
 [![2](https://github.com/user-attachments/assets/3caa4269-7d03-41bf-a9be-a86673c1766e)](https://github.com/user-attachments/assets/3caa4269-7d03-41bf-a9be-a86673c1766e)
+
 *Adding War Within styling and visual enhancements*
 
 ### ⚡ **Feature Implementation**
 [![3](https://github.com/user-attachments/assets/ec52f666-f057-4603-8d5c-c6955c53de5c)](https://github.com/user-attachments/assets/ec52f666-f057-4603-8d5c-c6955c53de5c)
+
 *Integrating new functionality and improving user experience*
 
 ### ✨ **Final Result**
