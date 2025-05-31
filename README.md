@@ -117,7 +117,7 @@ Found issues or have suggestions? We'd love to hear from you!
 
 ### 🎮 **Ready to upgrade your Spellbook?**
 
-**[Download Now](https://github.com/iThorgrim/TWW-SpellBook/releases) • [Report Issues](https://github.com/iThorgrim/TWW-SpellBook/issues)**
+**[Download Now](https://github.com/iThorgrim/TWW-SpellBook/releases) • [Preview!](https://github.com/iThorgrim/TWW-SpellBook/blob/main/PREVIEW.md) • [Report Issues](https://github.com/iThorgrim/TWW-SpellBook/issues)**
 
 ---
 
