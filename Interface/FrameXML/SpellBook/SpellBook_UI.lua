@@ -605,8 +605,3 @@ function GetDetailedSpellInfoByID(spellID)
 
     return result
 end
-
--- Exemple d'utilisation:
-local description = GetSpellDescriptionByID(100)
-print(description)
-local spellInfo = GetDetailedSpellInfoByID(12345)
