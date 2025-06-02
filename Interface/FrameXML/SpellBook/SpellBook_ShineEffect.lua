@@ -414,6 +414,12 @@ function SpellBook_ShineEffect:ApplyShineToUnusedSpells()
     end
 end
 
+function SpellBook_ShineEffect:OnHide()
+    if self.state.animationFrame then
+        self.state.animationFrame:Hide()
+    end
+end
+
 -- Event handlers
 local events = {
     "ACTIONBAR_SLOT_CHANGED",

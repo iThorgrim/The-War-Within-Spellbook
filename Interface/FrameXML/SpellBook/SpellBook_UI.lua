@@ -475,8 +475,7 @@ function PlayerSpellsFrame_OnHide()
 
     PlaySound("igSpellBookClose");
 
-    SpellBook_UI:UpdateSpellBookContent()
-    SpellBook_UI:UpdateCooldowns()
+    SpellBook_ShineEffect:OnHide()
 end
 
 -- ==========================================
