@@ -605,3 +605,16 @@ function GetDetailedSpellInfoByID(spellID)
 
     return result
 end
+
+local _ToggleSpellBook = ToggleSpellBook
+function ToggleSpellBook(booktype)
+    if booktype == BOOKTYPE_SPELL then
+        if (PlayerSpellsFrame:IsShown()) then
+            PlayerSpellsFrame:Hide()
+        else
+            PlayerSpellsFrame:Show()
+        end
+        return
+    end
+    _ToggleSpellBook(booktype)
+end

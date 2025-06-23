@@ -87,8 +87,6 @@ function SpellBookFrame_OnShow(self)
 
 	SpellBookFrame_PlayOpenSound();
 ]]--
-	self:Hide()
-	PlayerSpellsFrame:Show()
 end
 
 function SpellBookFrame_Update(showing)
