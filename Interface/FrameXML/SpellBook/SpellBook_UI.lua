@@ -48,8 +48,7 @@ local UIFactory = {
         text:SetPoint("LEFT", checkbox, "RIGHT", 0, 0)
         text:SetText("Show all ranks")
 
-        checkbox:SetHitRectInsets(-100, 0, 0, 0)
-
+        checkbox:SetHitRectInsets(0, -90, 0, 0)
         return checkbox, text
     end,
 
