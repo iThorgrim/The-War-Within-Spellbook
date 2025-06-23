@@ -221,7 +221,7 @@
 		</Layers>
 	</Frame>
 
-    <Frame name="PlayerSpellsFrame" parent="UIParent" toplevel="true" enableMouse="true" hidden="true" inherits="SpellBookFrameTemplate">
+    <Frame name="PlayerSpellsFrame" movable="true" parent="UIParent" toplevel="true" enableMouse="true" hidden="true" inherits="SpellBookFrameTemplate">
         <Size x="1100" y="650"/>
 
         <Anchors>
@@ -343,6 +343,12 @@
             <OnHide>
                 PlayerSpellsFrame_OnHide(self);
             </OnHide>
+            <OnMouseDown>
+                self:StartMoving()
+            </OnMouseDown>
+            <OnMouseUp>
+                self:StopMovingOrSizing()
+            </OnMouseUp>
         </Scripts>
     </Frame>
 </Ui>
