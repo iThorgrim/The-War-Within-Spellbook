@@ -199,10 +199,10 @@ local function SetupSpellButtonTemplate(spellBookFrame)
                     GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
                     GameTooltip:SetSpell(self.spellIndex, data.bookType)
                     GameTooltip:Show()
-                    
+
                     if not self.isPassive then
                         self.PortraitFrame.ActiveHoverBorder:Show()
-                        
+
                         local spellName = GetSpellName(self.spellIndex, data.bookType)
                         if spellName then
                             if SpellBook_ActionHighlight then
@@ -214,11 +214,11 @@ local function SetupSpellButtonTemplate(spellBookFrame)
 
                 button:SetScript("OnLeave", function(self)
                     GameTooltip:Hide()
-                    
+
                     if not self.isPassive then
                         self.PortraitFrame.ActiveHoverBorder:Hide()
                     end
-                    
+
                     if SpellBook_ActionHighlight then
                         SpellBook_ActionHighlight:ClearAllEffects()
                     end
@@ -226,7 +226,18 @@ local function SetupSpellButtonTemplate(spellBookFrame)
 
                 button:SetScript("OnClick", function(self, mouseButton)
                     if mouseButton == "LeftButton" and IsShiftKeyDown() then
-                        PickupSpell(self.spellIndex, data.bookType)
+                        local spellLink = GetSpellLink(self.spellIndex, data.bookType)
+                        local spellName = GetSpellName(self.spellIndex, data.bookType)
+                        if spellLink then
+                            local focus = GetCurrentKeyBoardFocus()
+                            if focus and focus:GetName() == "MacroFrameText" then
+                                if spellName then
+                                    focus:Insert("/cast " .. spellName)
+                                end
+                            else
+                                ChatEdit_InsertLink(spellLink)
+                            end
+                        end
                     elseif mouseButton == "LeftButton" then
                         CastSpell(self.spellIndex, data.bookType)
                     end
@@ -294,7 +305,7 @@ end
 
 --[[
     Initialize the UI module and set up event handling
-    
+
     @return void
 ]]--
 function SpellBook_UI:Initialize()
@@ -316,7 +327,7 @@ end
 
 --[[
     Update cooldowns for all spell buttons in the spellbook
-    
+
     @return void
 ]]--
 function SpellBook_UI:UpdateCooldowns()
@@ -340,7 +351,7 @@ end
 
 --[[
     Update spellbook content based on current filters and search criteria
-    
+
     @return void
 ]]--
 function SpellBook_UI:UpdateSpellBookContent()
@@ -372,7 +383,7 @@ end
 
 --[[
     Create pagination controls for the spellbook
-    
+
     @param {table} parentFrame The parent frame to attach pagination controls to
     @return void
 ]]--
@@ -390,7 +401,7 @@ end
 
 --[[
     Create filter controls for the spellbook
-    
+
     @param {table} parentFrame The parent frame to attach filter controls to
     @return void
 ]]--
@@ -416,7 +427,7 @@ end
 
 --[[
     Handler for player spells frame loading
-    
+
     @param {table} frame The main player spells frame
     @return void
 ]]--
@@ -440,7 +451,7 @@ end
 
 --[[
     Handler for player spells frame showing
-    
+
     @return void
 ]]--
 function PlayerSpellsFrame_OnShow()
